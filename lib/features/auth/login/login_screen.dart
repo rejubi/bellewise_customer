@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-import '../register/register_screen.dart';
-import '../widgets/auth_button.dart';
-import '../widgets/auth_logo.dart';
-import '../widgets/auth_textfield.dart';
-import '../../permissions/location_screen.dart';
+import '../../../app/theme.dart';
+import '../../../core/widgets/app_logo.dart';
+import '../../../core/widgets/app_text_field.dart';
+import '../../../core/widgets/primary_button.dart';
+import 'login_controller.dart';
 
-import '../../../core/utils/phone_number_formatter.dart';
-import '../forgot_password/forgot_password_screen.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -16,208 +15,168 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
-final _formKey = GlobalKey<FormState>();
+  final LoginController controller = LoginController();
 
-final phoneController = TextEditingController();
-final passwordController = TextEditingController();
+  bool obscurePassword = true;
+  bool loading = false;
 
-bool loading = false;
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
-@override
-void dispose() {
-phoneController.dispose();
-passwordController.dispose();
-super.dispose();
-}
+  Future<void> login() async {
+    FocusScope.of(context).unfocus();
 
-String? validatePhone(String? value) {
-
-if (value == null || value.isEmpty) {
-return "Please enter your phone number.";
-}
-
-final phone = value.replaceAll(' ', '');
-
-final regex = RegExp(r'^(070|071|080|081|090|091)\d{8}$');
-
-if (!regex.hasMatch(phone)) {
-return "Enter a valid phone number.";
-}
-
-return null;
-}
-
-String? validatePassword(String? value) {
-
-if (value == null || value.isEmpty) {
-return "Please enter your password.";
-}
-
-if (value.length < 8) {
-return "Password must be at least 8 characters.";
-}
-
-return null;
-}
-
-Future<void> signIn() async {
-
-if (!_formKey.currentState!.validate()) {
-return;
-}
-
-setState(() {
-loading = true;
-});
-
-await Future.delayed(const Duration(seconds: 2));
-
-if (!mounted) return;
-
-setState(() {
-loading = false;
-});
-
-Navigator.push(
-context,
-MaterialPageRoute(
-  builder: (_) => const LocationScreen(),
-),
-);
-}
-
-@override
-Widget build(BuildContext context) {
-return Scaffold(
-backgroundColor: Colors.white,
-
-body: SafeArea(
-child: SingleChildScrollView(
-padding: const EdgeInsets.symmetric(horizontal: 30),
-
-child: Form(
-key: _formKey,
-
-child: Column(
-children: [
-
-const SizedBox(height: 70),
-
-const AuthLogo(
-image: "assets/branding/logo_login.png",
-width: 180,
-),
-
-const SizedBox(height: 20),
-
-const Text(
-"Welcome Back",
-style: TextStyle(
-fontSize: 28,
-fontWeight: FontWeight.bold,
-color: Color(0xFF212121),
-),
-),
-
-const SizedBox(height: 45),
-
-AuthTextField(
-controller: phoneController,
-hint: "Phone Number",
-icon: Icons.phone_android,
-keyboardType: TextInputType.phone,
-validator: validatePhone,
-inputFormatters: [
-PhoneNumberFormatter(),
-],
-),
-
-const SizedBox(height: 18),
-
-AuthTextField(
-controller: passwordController,
-hint: "Password",
-icon: Icons.lock_outline,
-obscure: true,
-validator: validatePassword,
-),
-
-  const SizedBox(height: 8),
-
-  Align(
-    alignment: Alignment.centerRight,
-    child: TextButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const ForgotPasswordScreen(),
-          ),
-        );
-      },
-      child: const Text(
-        "Forgot Password?",
-        style: TextStyle(
-          color: Color(0xFFF57C00),
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    ),
-  ),
-
-  const SizedBox(height: 10),
-
-  loading
-      ? const SizedBox(
-    width: double.infinity,
-    height: 58,
-    child: Center(
-      child: CircularProgressIndicator(
-        color: Color(0xFFF57C00),
-      ),
-    ),
-  )
-      : AuthButton(
-    text: "SIGN IN",
-    onPressed: signIn,
-  ),
-
-  const SizedBox(height: 35),
-
-  const Text(
-    "Don't have an account?",
-    style: TextStyle(
-      color: Colors.grey,
-      fontSize: 15,
-    ),
-  ),
-
-  TextButton(
-    onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const RegisterScreen(),
+    if (emailController.text.trim().isEmpty ||
+        passwordController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter your email and password."),
         ),
       );
-    },
-    child: const Text(
-      "Create Account",
-      style: TextStyle(
-        color: Color(0xFFF57C00),
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-  ),
+      return;
+    }
 
-  const SizedBox(height: 25),
-],
-),
-),
-),
-),
-);
-}
+    setState(() {
+      loading = true;
+    });
+
+    final success = await controller.login(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      loading = false;
+    });
+
+    if (success) {
+      context.go('/home');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Invalid email or password."),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 30,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 20),
+
+              const Center(
+                child: AppLogo(width: 140),
+              ),
+
+              const SizedBox(height: 30),
+
+              const Text(
+                "Welcome Back",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              const Text(
+                "Login to order your favorite meals.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              AppTextField(
+                controller: emailController,
+                hint: "Email Address",
+                icon: Icons.email_outlined,
+                keyboardType: TextInputType.emailAddress,
+              ),
+
+              const SizedBox(height: 20),
+
+              AppTextField(
+                controller: passwordController,
+                hint: "Password",
+                icon: Icons.lock_outline,
+                obscureText: obscurePassword,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    obscurePassword
+                        ? Icons.visibility_off
+                        : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      obscurePassword = !obscurePassword;
+                    });
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    // Forgot password (coming next)
+                  },
+                  child: const Text("Forgot Password?"),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              PrimaryButton(
+                text: "Login",
+                loading: loading,
+                onPressed: login,
+              ),
+
+              const SizedBox(height: 30),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Don't have an account?"),
+                  TextButton(
+                    onPressed: () {
+                      context.go('/register');
+                    },
+                    child: const Text("Create Account"),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

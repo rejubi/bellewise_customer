@@ -1,0 +1,124 @@
+{
+  "project_info": {
+    "project_number": "918879118100",
+    "project_id": "bellewise-24a9f",
+    "storage_bucket": "bellewise-24a9f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918879118100:android:a33c2dd9976c4670b89801",
+        "android_client_info": {
+          "package_name": "com.bellewise.customer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJMYZ4XDSQz7tLW0O6sQ3jmq3uFZqlwaU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918879118100:android:b86f640be896cb43b89801",
+        "android_client_info": {
+          "package_name": "com.bellewise.rider"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJMYZ4XDSQz7tLW0O6sQ3jmq3uFZqlwaU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918879118100:android:f5b5e98b3941d27ab89801",
+        "android_client_info": {
+          "package_name": "com.bellewise.vendor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJMYZ4XDSQz7tLW0O6sQ3jmq3uFZqlwaU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918879118100:android:60d4b53c3118363fb89801",
+        "android_client_info": {
+          "package_name": "com.example.bellewise_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJMYZ4XDSQz7tLW0O6sQ3jmq3uFZqlwaU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918879118100:android:35353bad74cebc19b89801",
+        "android_client_info": {
+          "package_name": "com.example.bellewise_rider"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJMYZ4XDSQz7tLW0O6sQ3jmq3uFZqlwaU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918879118100:android:fff92d9a6938ceb7b89801",
+        "android_client_info": {
+          "package_name": "com.example.bellewise_vendor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJMYZ4XDSQz7tLW0O6sQ3jmq3uFZqlwaU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

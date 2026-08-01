@@ -1,12 +1,12 @@
 name: bellewise_customer
-description: "Bellewise Customer App"
+description: BelleWise Customer App
 
 publish_to: 'none'
 
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.12.2
+  sdk: ">=3.8.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -17,29 +17,23 @@ dependencies:
   # State Management
   flutter_riverpod: ^2.6.1
 
-  # HTTP Client
-  dio: ^5.9.0
-
   # Navigation
   go_router: ^16.2.1
+
+  # HTTP Client
+  dio: ^5.9.0
 
   # Secure Storage
   flutter_secure_storage: ^9.2.4
 
-  # Local Storage
-  shared_preferences: ^2.5.3
+  # Responsive UI
+  flutter_screenutil: ^5.9.3
 
-  # SVG Images
-  flutter_svg: ^2.2.1
+  # Fonts
+  google_fonts: ^6.3.0
 
-  # Loading Animations
-  flutter_spinkit: ^5.2.2
-
-  # Cached Images
-  cached_network_image: ^3.4.1
-
-  # Date Formatting
-  intl: ^0.20.2
+  # Animations
+  lottie: ^3.3.2
 
 dev_dependencies:
   flutter_test:
@@ -51,8 +45,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/branding/
     - assets/images/
     - assets/icons/
     - assets/animations/
-    - assets/stores/
