@@ -39,7 +39,7 @@ class ProductSection extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,
             itemCount: products.length,
-            separatorBuilder: (context, index) =>
+            separatorBuilder: (_, __) =>
             const SizedBox(width: 15),
             itemBuilder: (context, index) {
               return MealCard(

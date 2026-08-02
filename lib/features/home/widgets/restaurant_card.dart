@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
 import '../models/restaurant_model.dart';
@@ -22,17 +23,25 @@ class RestaurantCard extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {},
+        onTap: () {
+          context.push('/vendor/${restaurant.id}');
+        },
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
               child: restaurant.logo == null
-                  ? const SizedBox(
+                  ? Container(
                 height: 170,
-                child: Center(
-                  child: Icon(Icons.store, size: 60),
+                width: double.infinity,
+                color: Colors.grey.shade200,
+                child: const Icon(
+                  Icons.store,
+                  size: 60,
+                  color: Colors.grey,
                 ),
               )
                   : CachedNetworkImage(
@@ -40,20 +49,29 @@ class RestaurantCard extends StatelessWidget {
                 height: 170,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorWidget: (context, url, error) =>
-                const Icon(Icons.store, size: 60),
+                errorWidget: (_, __, ___) => Container(
+                  height: 170,
+                  color: Colors.grey.shade200,
+                  child: const Icon(
+                    Icons.store,
+                    size: 60,
+                  ),
+                ),
               ),
             ),
-
             ListTile(
               title: Text(
                 restaurant.businessName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               subtitle: Text(
                 "${restaurant.rating} ⭐ • ${restaurant.estimatedDeliveryTime} mins",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               trailing: Text(
                 "₦${restaurant.deliveryFee}",

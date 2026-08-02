@@ -51,4 +51,8 @@ class CartController {
       response.data,
     );
   }
+
+  Future<void> clearCart() async {
+    await repository.clearCart();
+  }
 }

@@ -50,12 +50,10 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
 
-              const SizedBox(height: 30),
-
               const Text(
-                'BelleWise',
+                'YOUR FOOD PLUG',
                 style: TextStyle(
-                  fontSize: 34,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -63,13 +61,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
               const SizedBox(height: 8),
 
-              const Text(
-                'Fast • Efficient • Reliable',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 17,
-                ),
-              ),
 
               const Spacer(),
 
@@ -80,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
               const SizedBox(height: 20),
 
               const Text(
-                'Version 1.0.0',
+                'Powered by Bellewise',
                 style: TextStyle(
                   color: Colors.white70,
                 ),

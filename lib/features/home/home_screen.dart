@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../app/theme.dart';
+import '../cart/controllers/cart_state.dart';
+import '../cart/widgets/floating_cart_button.dart';
 import 'controllers/home_controller.dart';
 import 'models/home_model.dart';
-import 'widgets/banner_slider.dart';
 import 'widgets/bottom_navigation.dart';
 import 'widgets/category_section.dart';
 import 'widgets/home_app_bar.dart';
-import 'widgets/location_card.dart';
 import 'widgets/product_section.dart';
+import 'widgets/promotion_slider.dart';
 import 'widgets/restaurant_section.dart';
 import 'widgets/search_field.dart';
+import '../../core/errors/error_handler.dart';
+import '../../core/widgets/error_view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,128 +24,177 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final HomeController controller = HomeController();
+  final HomeController homeController = HomeController();
+  final CartState cartState = CartState.instance;
 
   late Future<HomeModel> _homeFuture;
-
-  int currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _homeFuture = controller.loadHome();
+
+    _homeFuture = homeController.loadHome();
+
+    if (!cartState.isLoaded) {
+      cartState.load();
+    }
   }
 
   Future<void> _refresh() async {
     setState(() {
-      _homeFuture = controller.loadHome();
+      _homeFuture = homeController.loadHome();
     });
 
-    await _homeFuture;
+    await Future.wait([
+      _homeFuture,
+      cartState.refresh(),
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      bottomNavigationBar: HomeBottomNavigation(
-        currentIndex: currentIndex,
-        onTap: (index) {
-          setState(() {
-            currentIndex = index;
-          });
+    return AnimatedBuilder(
+      animation: cartState,
+      builder: (context, _) {
+        return Stack(
+          children: [
+            Scaffold(
+              backgroundColor: AppColors.background,
 
-          // TODO:
-          // 0 Home
-          // 1 Orders
-          // 2 Cart
-          // 3 Favorites
-          // 4 Profile
-        },
-      ),
-      body: SafeArea(
-        child: FutureBuilder<HomeModel>(
-          future: _homeFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
+              bottomNavigationBar: HomeBottomNavigation(
+                currentIndex: 0,
+                onTap: (index) async {
+                  switch (index) {
+                    case 0:
+                      break;
 
-            if (snapshot.hasError) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(
-                    snapshot.error.toString(),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              );
-            }
+                    case 1:
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            "Orders coming soon",
+                          ),
+                        ),
+                      );
+                      break;
 
-            if (!snapshot.hasData) {
-              return const Center(
-                child: Text("No data available"),
-              );
-            }
+                    case 2:
+                      await context.push("/cart");
 
-            final home = snapshot.data!;
+                      if (mounted) {
+                        await cartState.refresh();
+                      }
+                      break;
 
-            return RefreshIndicator(
-              onRefresh: _refresh,
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: [
-                  HomeAppBar(
-                    customer: home.customer,
-                    notifications: home.notifications,
-                  ),
+                    case 3:
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            "Favorites coming soon",
+                          ),
+                        ),
+                      );
+                      break;
 
-                  const SizedBox(height: 20),
-
-                  LocationCard(
-                    location: home.customer["address"]?.toString().isNotEmpty == true
-                        ? home.customer["address"]
-                        : "Choose delivery location",
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  const SearchField(),
-
-                  const SizedBox(height: 20),
-
-                  BannerSlider(
-                    banners: home.banners,
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  CategorySection(
-                    categories: home.categories,
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  RestaurantSection(
-                    restaurants: home.restaurants,
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  ProductSection(
-                    products: home.meals,
-                  ),
-
-                  const SizedBox(height: 30),
-                ],
+                    case 4:
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            "Profile coming soon",
+                          ),
+                        ),
+                      );
+                      break;
+                  }
+                },
               ),
-            );
-          },
-        ),
-      ),
+
+              body: SafeArea(
+                child: FutureBuilder<HomeModel>(
+                  future: _homeFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    if (snapshot.hasError) {
+                      return ErrorView(
+                        message: ErrorHandler.getMessage(snapshot.error),
+                        onRetry: _refresh,
+                      );
+                    }
+
+                    if (!snapshot.hasData) {
+                      return const Center(
+                        child: Text(
+                          "No data available",
+                        ),
+                      );
+                    }
+
+                    final home = snapshot.data!;
+
+                    return RefreshIndicator(
+                      onRefresh: _refresh,
+                      child: ListView(
+                        physics:
+                        const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          HomeAppBar(
+                            customer: home.customer,
+                            notifications:
+                            home.notifications,
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          const SearchField(),
+
+                          const SizedBox(height: 20),
+
+                          if (home.promotions.isNotEmpty)
+                            PromotionSlider(
+                              promotions:
+                              home.promotions,
+                            ),
+
+                          const SizedBox(height: 20),
+
+                          CategorySection(
+                            categories:
+                            home.categories,
+                          ),
+
+                          const SizedBox(height: 25),
+
+                          RestaurantSection(
+                            restaurants:
+                            home.restaurants,
+                          ),
+
+                          const SizedBox(height: 25),
+
+                          ProductSection(
+                            products: home.meals,
+                          ),
+
+                          const SizedBox(height: 30),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+
+            /// Floating Cart
+            const FloatingCartButton(),
+          ],
+        );
+      },
     );
   }
 }

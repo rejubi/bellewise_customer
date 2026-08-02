@@ -35,13 +35,6 @@ class CartSummary extends StatelessWidget {
             "₦${subtotal.toStringAsFixed(0)}",
           ),
 
-          const SizedBox(height: 14),
-
-          _row(
-            "Delivery",
-            "Calculated at checkout",
-          ),
-
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 18),
             child: Divider(height: 1),

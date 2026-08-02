@@ -1,13 +1,21 @@
 import 'category_model.dart';
 import 'meal_model.dart';
+import 'promotion_model.dart';
 import 'restaurant_model.dart';
 
 class HomeModel {
   final Map<String, dynamic> customer;
+
   final List<CategoryModel> categories;
+
   final List<RestaurantModel> restaurants;
+
   final List<MealModel> meals;
+
+  final List<PromotionModel> promotions;
+
   final List banners;
+
   final int notifications;
 
   HomeModel({
@@ -15,6 +23,7 @@ class HomeModel {
     required this.categories,
     required this.restaurants,
     required this.meals,
+    required this.promotions,
     required this.banners,
     required this.notifications,
   });
@@ -22,17 +31,34 @@ class HomeModel {
   factory HomeModel.fromJson(Map<String, dynamic> json) {
     return HomeModel(
       customer: json["customer"],
+
       categories: (json["categories"] as List)
-          .map((e) => CategoryModel.fromJson(e))
+          .map(
+            (e) => CategoryModel.fromJson(e),
+      )
           .toList(),
+
       restaurants: (json["featured_restaurants"] as List)
-          .map((e) => RestaurantModel.fromJson(e))
+          .map(
+            (e) => RestaurantModel.fromJson(e),
+      )
           .toList(),
+
       meals: (json["featured_products"] as List)
-          .map((e) => MealModel.fromJson(e))
+          .map(
+            (e) => MealModel.fromJson(e),
+      )
           .toList(),
-      banners: json["banners"],
-      notifications: json["notifications_count"],
+
+      promotions: (json["promotions"] as List? ?? [])
+          .map(
+            (e) => PromotionModel.fromJson(e),
+      )
+          .toList(),
+
+      banners: json["banners"] ?? [],
+
+      notifications: json["notifications_count"] ?? 0,
     );
   }
 }

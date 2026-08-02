@@ -5,7 +5,6 @@ import '../models/cart_item_model.dart';
 
 class CartItemCard extends StatelessWidget {
   final CartItemModel item;
-
   final VoidCallback onIncrease;
   final VoidCallback onDecrease;
   final VoidCallback onRemove;
@@ -20,145 +19,159 @@ class CartItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 1,
-      margin: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 8,
+    return Dismissible(
+      key: ValueKey(item.id),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        margin: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 6,
+        ),
+        padding: const EdgeInsets.only(right: 24),
+        alignment: Alignment.centerRight,
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: const Icon(
+          Icons.delete,
+          color: Colors.white,
+          size: 30,
+        ),
       ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: item.image != null
-                  ? Image.network(
-                item.image!,
-                width: 90,
-                height: 90,
-                fit: BoxFit.cover,
-              )
-                  : Container(
-                width: 90,
-                height: 90,
-                color: Colors.grey.shade200,
-                child: const Icon(
-                  Icons.fastfood,
-                  size: 40,
-                  color: Colors.grey,
+      onDismissed: (_) => onRemove(),
+      child: Card(
+        elevation: 1,
+        margin: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 6,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: item.image != null
+                    ? Image.network(
+                  item.image!,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                )
+                    : Container(
+                  width: 60,
+                  height: 60,
+                  color: Colors.grey.shade200,
+                  child: const Icon(
+                    Icons.fastfood,
+                    color: Colors.grey,
+                    size: 28,
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(width: 14),
+              const SizedBox(width: 12),
 
-            Expanded(
-              child: Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
 
-                  const SizedBox(height: 5),
+                    const SizedBox(height: 3),
 
-                  Text(
-                    item.description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
+                    Text(
+                      item.description,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
-                  ),
 
-                  const SizedBox(height: 10),
+                    const SizedBox(height: 6),
 
-                  Text(
-                    "₦${item.price.toStringAsFixed(0)}",
-                    style: const TextStyle(
-                      fontSize: 17,
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius:
-                          BorderRadius.circular(8),
-                          border: Border.all(
-                            color: Colors.grey.shade300,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "₦${item.price.toStringAsFixed(0)}",
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
                           ),
                         ),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              onPressed: onDecrease,
-                              icon: const Icon(
-                                Icons.remove,
-                              ),
-                            ),
 
-                            Text(
-                              item.quantity.toString(),
-                              style: const TextStyle(
-                                fontWeight:
-                                FontWeight.bold,
-                              ),
+                        Container(
+                          height: 34,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
+                              color: Colors.grey.shade300,
                             ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              InkWell(
+                                onTap: onDecrease,
+                                child: const SizedBox(
+                                  width: 32,
+                                  child: Icon(
+                                    Icons.remove,
+                                    size: 18,
+                                  ),
+                                ),
+                              ),
 
-                            IconButton(
-                              onPressed: onIncrease,
-                              icon: const Icon(
-                                Icons.add,
+                              Padding(
+                                padding:
+                                const EdgeInsets.symmetric(horizontal: 6),
+                                child: Text(
+                                  item.quantity.toString(),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
+
+                              InkWell(
+                                onTap: onIncrease,
+                                child: const SizedBox(
+                                  width: 32,
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 18,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-
-                      const Spacer(),
-
-                      IconButton(
-                        onPressed: onRemove,
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      "Subtotal: ₦${item.subtotal.toStringAsFixed(0)}",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                      ),
+                      ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

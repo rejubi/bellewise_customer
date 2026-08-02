@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../models/restaurant_model.dart';
 import 'restaurant_card.dart';
 
 class RestaurantSection extends StatelessWidget {
-  final List restaurants;
+  final List<RestaurantModel> restaurants;
 
   const RestaurantSection({
     super.key,
@@ -40,10 +42,19 @@ class RestaurantSection extends StatelessWidget {
             itemCount: restaurants.length,
             separatorBuilder: (_, _) => const SizedBox(width: 16),
             itemBuilder: (context, index) {
+              final restaurant = restaurants[index];
+
               return SizedBox(
                 width: 280,
-                child: RestaurantCard(
-                  restaurant: restaurants[index],
+                child: GestureDetector(
+                  onTap: () {
+                    context.push(
+                      "/restaurant/${restaurant.id}",
+                    );
+                  },
+                  child: RestaurantCard(
+                    restaurant: restaurant,
+                  ),
                 ),
               );
             },

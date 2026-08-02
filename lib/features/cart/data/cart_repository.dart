@@ -42,4 +42,11 @@ class CartRepository {
       "${Endpoints.cartItem}/$itemId/delete/",
     );
   }
+
+  /// NEW
+  Future<void> clearCart() async {
+    await ApiClient.dio.delete(
+      "${Endpoints.cart}clear/",
+    );
+  }
 }

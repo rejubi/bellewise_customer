@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../app/theme.dart';
+import '../../cart/controllers/cart_state.dart';
 
 class HomeBottomNavigation extends StatelessWidget {
   final int currentIndex;
@@ -14,41 +15,55 @@ class HomeBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      selectedItemColor: AppColors.primary,
-      unselectedItemColor: Colors.grey,
-      type: BottomNavigationBarType.fixed,
-      elevation: 8,
-      showUnselectedLabels: true,
-      onTap: onTap,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
-          label: "Home",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.receipt_long_outlined),
-          activeIcon: Icon(Icons.receipt_long),
-          label: "Orders",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_cart_outlined),
-          activeIcon: Icon(Icons.shopping_cart),
-          label: "Cart",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.favorite_border),
-          activeIcon: Icon(Icons.favorite),
-          label: "Favorites",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline),
-          activeIcon: Icon(Icons.person),
-          label: "Profile",
-        ),
-      ],
+    return AnimatedBuilder(
+      animation: CartState.instance,
+      builder: (context, child) {
+        final count = CartState.instance.itemCount;
+
+        return BottomNavigationBar(
+          currentIndex: currentIndex,
+          selectedItemColor: AppColors.primary,
+          unselectedItemColor: Colors.grey,
+          type: BottomNavigationBarType.fixed,
+          showUnselectedLabels: true,
+          onTap: onTap,
+          items: [
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: "Home",
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.receipt_long_outlined),
+              activeIcon: Icon(Icons.receipt_long),
+              label: "Orders",
+            ),
+            BottomNavigationBarItem(
+              icon: Badge(
+                isLabelVisible: count > 0,
+                label: Text("$count"),
+                child: const Icon(Icons.shopping_cart_outlined),
+              ),
+              activeIcon: Badge(
+                isLabelVisible: count > 0,
+                label: Text("$count"),
+                child: const Icon(Icons.shopping_cart),
+              ),
+              label: "Cart",
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.favorite_border),
+              activeIcon: Icon(Icons.favorite),
+              label: "Favorites",
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: "Profile",
+            ),
+          ],
+        );
+      },
     );
   }
 }

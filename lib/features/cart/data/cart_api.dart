@@ -33,4 +33,12 @@ class CartApi {
 
     return response.data;
   }
+
+  Future<dynamic> clearCart() async {
+    final response = await ApiClient.dio.delete(
+      "${Endpoints.cart}clear/",
+    );
+
+    return response.data;
+  }
 }

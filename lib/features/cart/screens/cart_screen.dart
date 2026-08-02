@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../app/theme.dart';
+import '../../../core/errors/error_handler.dart';
+import '../../../core/widgets/error_view.dart';
 import '../controllers/cart_controller.dart';
 import '../models/cart_model.dart';
 import '../widgets/cart_item_card.dart';
@@ -54,14 +56,18 @@ class _CartScreenState extends State<CartScreen> {
           }
 
           if (snapshot.hasError) {
-            return Center(
-              child: Text(snapshot.error.toString()),
+            return ErrorView(
+              message: ErrorHandler.getMessage(
+                snapshot.error,
+              ),
+              onRetry: _reload,
             );
           }
 
           if (!snapshot.hasData) {
-            return const Center(
-              child: Text("Unable to load cart."),
+            return ErrorView(
+              message: "Unable to load your cart.",
+              onRetry: _reload,
             );
           }
 
@@ -71,14 +77,19 @@ class _CartScreenState extends State<CartScreen> {
             return RefreshIndicator(
               onRefresh: _reload,
               child: ListView(
+                physics:
+                const AlwaysScrollableScrollPhysics(),
                 children: const [
                   SizedBox(height: 150),
+
                   Icon(
                     Icons.shopping_cart_outlined,
                     size: 90,
                     color: Colors.grey,
                   ),
+
                   SizedBox(height: 20),
+
                   Center(
                     child: Text(
                       "Your cart is empty",
@@ -88,7 +99,9 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                     ),
                   ),
+
                   SizedBox(height: 8),
+
                   Center(
                     child: Text(
                       "Add meals to begin your order.",
@@ -99,90 +112,123 @@ class _CartScreenState extends State<CartScreen> {
             );
           }
 
-          return RefreshIndicator(
-            onRefresh: _reload,
-            child: ListView(
-              padding: const EdgeInsets.only(bottom: 120),
-              children: [
-                if (cart.vendor != null)
-                  Container(
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius:
-                      BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 26,
-                          backgroundImage:
-                          cart.vendor!.logo != null
-                              ? NetworkImage(
-                            cart.vendor!.logo!,
-                          )
-                              : null,
-                          child: cart.vendor!.logo == null
-                              ? const Icon(Icons.store)
-                              : null,
-                        ),
-
-                        const SizedBox(width: 14),
-
-                        Expanded(
-                          child: Text(
-                            cart.vendor!.businessName,
-                            style: const TextStyle(
-                              fontWeight:
-                              FontWeight.bold,
-                              fontSize: 17,
+          return Column(
+            children: [
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: _reload,
+                  child: ListView(
+                    physics:
+                    const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      if (cart.vendor != null)
+                        Container(
+                          margin:
+                          const EdgeInsets.all(16),
+                          padding:
+                          const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                            BorderRadius.circular(
+                              16,
                             ),
                           ),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 26,
+                                backgroundImage:
+                                cart.vendor!.logo !=
+                                    null
+                                    ? NetworkImage(
+                                  cart.vendor!
+                                      .logo!,
+                                )
+                                    : null,
+                                child:
+                                cart.vendor!.logo ==
+                                    null
+                                    ? const Icon(
+                                  Icons.store,
+                                )
+                                    : null,
+                              ),
+
+                              const SizedBox(width: 14),
+
+                              Expanded(
+                                child: Text(
+                                  cart.vendor!
+                                      .businessName,
+                                  style:
+                                  const TextStyle(
+                                    fontWeight:
+                                    FontWeight.bold,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
 
-                ...cart.items.map(
-                      (item) => CartItemCard(
-                    item: item,
-                    onIncrease: () async {
-                      await controller.updateItem(
-                        item.id,
-                        item.quantity + 1,
-                      );
-                      _reload();
-                    },
-                    onDecrease: () async {
-                      await controller.updateItem(
-                        item.id,
-                        item.quantity - 1,
-                      );
-                      _reload();
-                    },
-                    onRemove: () async {
-                      await controller.removeItem(
-                        item.id,
-                      );
-                      _reload();
-                    },
+                      ...cart.items.map(
+                            (item) => CartItemCard(
+                          item: item,
+
+                          onIncrease: () async {
+                            await controller.updateItem(
+                              item.id,
+                              item.quantity + 1,
+                            );
+
+                            await _reload();
+                          },
+
+                          onDecrease: () async {
+                            if (item.quantity == 1) {
+                              await controller.removeItem(
+                                item.id,
+                              );
+                            } else {
+                              await controller.updateItem(
+                                item.id,
+                                item.quantity - 1,
+                              );
+                            }
+
+                            await _reload();
+                          },
+
+                          onRemove: () async {
+                            await controller.removeItem(
+                              item.id,
+                            );
+
+                            await _reload();
+                          },
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+                    ],
                   ),
                 ),
+              ),
 
-                CartSummary(
-                  subtotal: cart.total,
-                ),
-              ],
-            ),
+              CartSummary(
+                subtotal: cart.total,
+              ),
+
+              CheckoutButton(
+                onPressed: () {
+                  // TODO:
+                  // Navigate to Checkout
+                },
+              ),
+            ],
           );
-        },
-      ),
-
-      bottomNavigationBar: CheckoutButton(
-        onPressed: () {
-          // TODO:
-          // Navigate to Checkout
         },
       ),
     );
