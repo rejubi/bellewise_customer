@@ -10,8 +10,21 @@ class ApiClient {
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
       headers: {
+        "Accept": "application/json",
         "Content-Type": "application/json",
       },
     ),
-  )..interceptors.add(AuthInterceptor());
+  );
+
+  static bool _initialized = false;
+
+  static void initialize() {
+    if (_initialized) return;
+
+    dio.interceptors.add(
+      AuthInterceptor(),
+    );
+
+    _initialized = true;
+  }
 }
