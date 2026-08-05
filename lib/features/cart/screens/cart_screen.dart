@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
 import '../../../core/errors/error_handler.dart';
@@ -39,12 +40,10 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-
       appBar: AppBar(
         title: const Text("My Cart"),
         centerTitle: true,
       ),
-
       body: FutureBuilder<CartModel>(
         future: _cartFuture,
         builder: (context, snapshot) {
@@ -77,34 +76,70 @@ class _CartScreenState extends State<CartScreen> {
             return RefreshIndicator(
               onRefresh: _reload,
               child: ListView(
-                physics:
-                const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  SizedBox(height: 150),
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                ),
+                children: [
+                  const SizedBox(height: 120),
 
-                  Icon(
+                  const Icon(
                     Icons.shopping_cart_outlined,
                     size: 90,
                     color: Colors.grey,
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 24),
 
-                  Center(
+                  const Center(
                     child: Text(
                       "Your cart is empty",
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
 
-                  SizedBox(height: 8),
+                  const SizedBox(height: 10),
 
                   Center(
                     child: Text(
-                      "Add meals to begin your order.",
+                      "Browse restaurants and add delicious meals to your cart.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      onPressed: () {
+                        context.go("/home");
+                      },
+                      icon: const Icon(Icons.restaurant_menu),
+                      label: const Text(
+                        "Start Shopping",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -130,39 +165,30 @@ class _CartScreenState extends State<CartScreen> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius:
-                            BorderRadius.circular(
-                              16,
-                            ),
+                            BorderRadius.circular(16),
                           ),
                           child: Row(
                             children: [
                               CircleAvatar(
                                 radius: 26,
                                 backgroundImage:
-                                cart.vendor!.logo !=
-                                    null
+                                cart.vendor!.logo != null
                                     ? NetworkImage(
-                                  cart.vendor!
-                                      .logo!,
+                                  cart.vendor!.logo!,
                                 )
                                     : null,
-                                child:
-                                cart.vendor!.logo ==
+                                child: cart.vendor!.logo ==
                                     null
                                     ? const Icon(
                                   Icons.store,
                                 )
                                     : null,
                               ),
-
                               const SizedBox(width: 14),
-
                               Expanded(
                                 child: Text(
-                                  cart.vendor!
-                                      .businessName,
-                                  style:
-                                  const TextStyle(
+                                  cart.vendor!.businessName,
+                                  style: const TextStyle(
                                     fontWeight:
                                     FontWeight.bold,
                                     fontSize: 17,
@@ -176,7 +202,6 @@ class _CartScreenState extends State<CartScreen> {
                       ...cart.items.map(
                             (item) => CartItemCard(
                           item: item,
-
                           onIncrease: () async {
                             await controller.updateItem(
                               item.id,
@@ -185,7 +210,6 @@ class _CartScreenState extends State<CartScreen> {
 
                             await _reload();
                           },
-
                           onDecrease: () async {
                             if (item.quantity == 1) {
                               await controller.removeItem(
@@ -200,7 +224,6 @@ class _CartScreenState extends State<CartScreen> {
 
                             await _reload();
                           },
-
                           onRemove: () async {
                             await controller.removeItem(
                               item.id,
@@ -218,13 +241,15 @@ class _CartScreenState extends State<CartScreen> {
               ),
 
               CartSummary(
-                subtotal: cart.total,
+                subtotal: cart.subtotal,
               ),
 
               CheckoutButton(
                 onPressed: () {
-                  // TODO:
-                  // Navigate to Checkout
+                  context.push(
+                    "/checkout",
+                    extra: cart,
+                  );
                 },
               ),
             ],

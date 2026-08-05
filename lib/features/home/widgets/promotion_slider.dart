@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
 import '../models/promotion_model.dart';
@@ -61,6 +63,22 @@ class _PromotionSliderState extends State<PromotionSlider> {
     super.dispose();
   }
 
+  void _openPromotion(PromotionModel promo) {
+    if (promo.productId != null) {
+      context.push("/product/${promo.productId}");
+      return;
+    }
+
+    if (promo.vendorId != null) {
+      context.push("/vendor/${promo.vendorId}");
+      return;
+    }
+
+    if (promo.categoryId != null) {
+      context.push("/category/${promo.categoryId}");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.promotions.isEmpty) {
@@ -86,89 +104,111 @@ class _PromotionSliderState extends State<PromotionSlider> {
                 padding: const EdgeInsets.symmetric(
                   horizontal: 8,
                 ),
-                child: ClipRRect(
+                child: InkWell(
                   borderRadius: BorderRadius.circular(20),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.network(
-                        promo.image,
-                        fit: BoxFit.cover,
-                      ),
+                  onTap: () => _openPromotion(promo),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: promo.image,
+                          fit: BoxFit.cover,
+                          placeholder: (_, __) => const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                          errorWidget: (_, __, ___) => Container(
+                            color: Colors.grey.shade300,
+                            child: const Icon(
+                              Icons.image_not_supported,
+                              size: 60,
+                            ),
+                          ),
+                        ),
 
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              Colors.black.withOpacity(.75),
-                              Colors.transparent,
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [
+                                Colors.black.withOpacity(.75),
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.all(18),
+                          child: Column(
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                            mainAxisAlignment:
+                            MainAxisAlignment.end,
+                            children: [
+                              if (promo.vendorName.isNotEmpty)
+                                Container(
+                                  padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary,
+                                    borderRadius:
+                                    BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    promo.vendorName,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight:
+                                      FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+
+                              if (promo.vendorName.isNotEmpty)
+                                const SizedBox(height: 10),
+
+                              Text(
+                                promo.title,
+                                maxLines: 2,
+                                overflow:
+                                TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight:
+                                  FontWeight.bold,
+                                ),
+                              ),
+
+                              if (promo.subtitle.isNotEmpty)
+                                Padding(
+                                  padding:
+                                  const EdgeInsets.only(
+                                    top: 4,
+                                  ),
+                                  child: Text(
+                                    promo.subtitle,
+                                    maxLines: 2,
+                                    overflow:
+                                    TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                         ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.all(18),
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          mainAxisAlignment:
-                          MainAxisAlignment.end,
-                          children: [
-                            Container(
-                              padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                borderRadius:
-                                BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                promo.vendorName,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight:
-                                  FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 10),
-
-                            Text(
-                              promo.title,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight:
-                                FontWeight.bold,
-                              ),
-                            ),
-
-                            if (promo.subtitle.isNotEmpty)
-                              Padding(
-                                padding:
-                                const EdgeInsets.only(
-                                  top: 4,
-                                ),
-                                child: Text(
-                                  promo.subtitle,
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -188,9 +228,8 @@ class _PromotionSliderState extends State<PromotionSlider> {
               return AnimatedContainer(
                 duration:
                 const Duration(milliseconds: 250),
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 4,
-                ),
+                margin:
+                const EdgeInsets.symmetric(horizontal: 4),
                 height: 8,
                 width: selected ? 24 : 8,
                 decoration: BoxDecoration(

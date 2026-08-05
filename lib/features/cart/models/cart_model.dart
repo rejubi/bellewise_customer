@@ -8,12 +8,19 @@ class CartModel {
 
   final List<CartItemModel> items;
 
+  /// Backend calculated values
+  final double subtotal;
+  final double deliveryFee;
+  final double serviceFee;
   final double total;
 
   CartModel({
     required this.id,
     required this.vendor,
     required this.items,
+    required this.subtotal,
+    required this.deliveryFee,
+    required this.serviceFee,
     required this.total,
   });
 
@@ -34,6 +41,18 @@ class CartModel {
             (e) => CartItemModel.fromJson(e),
       )
           .toList(),
+
+      subtotal: double.parse(
+        json["subtotal"].toString(),
+      ),
+
+      deliveryFee: double.parse(
+        json["delivery_fee"].toString(),
+      ),
+
+      serviceFee: double.parse(
+        json["service_fee"].toString(),
+      ),
 
       total: double.parse(
         json["total"].toString(),

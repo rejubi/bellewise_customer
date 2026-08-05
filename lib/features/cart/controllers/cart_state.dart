@@ -35,7 +35,17 @@ class CartState extends ChangeNotifier {
     );
   }
 
+  /// Product subtotal only
+  double get subtotal => _cart?.subtotal ?? 0;
+
+  /// Grand total (subtotal + delivery + service)
   double get total => _cart?.total ?? 0;
+
+  double get deliveryFee =>
+      _cart?.deliveryFee ?? 0;
+
+  double get serviceFee =>
+      _cart?.serviceFee ?? 0;
 
   Future<void> load() async {
     _cart = await _controller.loadCart();
@@ -150,8 +160,6 @@ class CartState extends ChangeNotifier {
     );
   }
 
-  /// Returns true if the current cart belongs
-  /// to another vendor.
   bool hasDifferentVendor(
       int vendorId,
       ) {

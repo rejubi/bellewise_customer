@@ -17,27 +17,29 @@ class HomeBottomNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: CartState.instance,
-      builder: (context, child) {
+      builder: (context, _) {
         final count = CartState.instance.itemCount;
 
         return BottomNavigationBar(
           currentIndex: currentIndex,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: Colors.grey,
+          onTap: onTap,
           type: BottomNavigationBarType.fixed,
           showUnselectedLabels: true,
-          onTap: onTap,
+          selectedItemColor: AppColors.primary,
+          unselectedItemColor: Colors.grey,
           items: [
             const BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home),
               label: "Home",
             ),
+
             const BottomNavigationBarItem(
               icon: Icon(Icons.receipt_long_outlined),
               activeIcon: Icon(Icons.receipt_long),
               label: "Orders",
             ),
+
             BottomNavigationBarItem(
               icon: Badge(
                 isLabelVisible: count > 0,
@@ -51,11 +53,13 @@ class HomeBottomNavigation extends StatelessWidget {
               ),
               label: "Cart",
             ),
+
             const BottomNavigationBarItem(
               icon: Icon(Icons.favorite_border),
               activeIcon: Icon(Icons.favorite),
               label: "Favorites",
             ),
+
             const BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),
               activeIcon: Icon(Icons.person),

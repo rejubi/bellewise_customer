@@ -38,6 +38,9 @@ dependencies:
   # Images
   cached_network_image: ^3.4.1
 
+  # Google Maps
+  google_maps_flutter: ^2.12.3
+
   # Carousel
   carousel_slider: ^5.1.2
 

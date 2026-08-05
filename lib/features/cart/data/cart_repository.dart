@@ -43,10 +43,12 @@ class CartRepository {
     );
   }
 
-  /// NEW
+  // ==============================
+  // CLEAR CART (LOCAL ONLY)
+  // ==============================
+
   Future<void> clearCart() async {
-    await ApiClient.dio.delete(
-      "${Endpoints.cart}clear/",
-    );
+    // No backend endpoint exists.
+    // CartState will clear the in-memory cart.
   }
 }
