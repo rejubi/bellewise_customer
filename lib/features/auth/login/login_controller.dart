@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../../../core/services/notification_service.dart';
 import '../../../core/storage/secure_storage.dart';
 import 'login_repository.dart';
 
@@ -19,10 +20,21 @@ class LoginController {
 
       final data = response.data;
 
+      // Save JWT tokens
       await storage.saveTokens(
         access: data["access"],
         refresh: data["refresh"],
       );
+
+      // Start notification setup in the background.
+      // Do not wait for it and do not let it interrupt login.
+      Future(() async {
+        try {
+          await NotificationService.instance.initialize();
+        } catch (_) {
+          // Ignore notification errors.
+        }
+      });
 
       return true;
     } on DioException {

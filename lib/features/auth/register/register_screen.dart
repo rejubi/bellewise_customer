@@ -55,6 +55,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
+    setState(() {
+      loading = true;
+    });
+
     final message = await controller.register(
       firstName: firstNameController.text.trim(),
       lastName: lastNameController.text.trim(),
@@ -65,6 +69,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
 
     if (!mounted) return;
+
+    setState(() {
+      loading = false;
+    });
 
     if (message == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -195,7 +203,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               PrimaryButton(
                 text: "Create Account",
                 loading: loading,
-                onPressed: register,
+                onPressed: loading ? null : register,
               ),
 
               const SizedBox(height: 24),

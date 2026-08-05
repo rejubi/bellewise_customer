@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
 
-    // Firebase
+    // Google Services
     id("com.google.gms.google-services")
 
     // Flutter
@@ -17,7 +17,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
 
-        // REQUIRED by flutter_local_notifications
+        // Required by flutter_local_notifications
         isCoreLibraryDesugaringEnabled = true
     }
 
@@ -49,5 +49,13 @@ flutter {
 }
 
 dependencies {
+
+    // Firebase Bill of Materials (BoM)
+    implementation(platform("com.google.firebase:firebase-bom:34.2.0"))
+
+    // Firebase Cloud Messaging
+    implementation("com.google.firebase:firebase-messaging")
+
+    // Java 17 desugaring
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }

@@ -25,7 +25,8 @@ import '../features/profile/screens/change_password_screen.dart';
 import '../features/profile/screens/help_support_screen.dart';
 import '../features/profile/screens/about_screen.dart';
 import '../features/profile/screens/add_address_screen.dart';
-
+import '../features/auth/forgot_password/forgot_password_screen.dart';
+import '../features/auth/reset_password/reset_password_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -61,6 +62,25 @@ final router = GoRouter(
     GoRoute(
       path: '/register',
       builder: (context, state) => const RegisterScreen(),
+    ),
+
+    GoRoute(
+      path: '/forgot-password',
+      builder: (context, state) =>
+      const ForgotPasswordScreen(),
+    ),
+
+    GoRoute(
+      path: '/reset-password',
+      builder: (context, state) {
+        final token = state.uri.queryParameters["token"] ?? "";
+        final uid = state.uri.queryParameters["uid"] ?? "";
+
+        return ResetPasswordScreen(
+          uid: uid,
+          token: token,
+        );
+      },
     ),
 
     // ==========================================

@@ -23,6 +23,9 @@ dependencies:
   # Navigation
   go_router: ^16.2.1
 
+  # Deep Links
+  app_links: ^6.4.0
+
   # Secure Storage
   flutter_secure_storage: ^9.2.4
 

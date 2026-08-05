@@ -15,8 +15,22 @@ class Endpoints {
   static const String profile =
       "/customers/profile/";
 
+  static const String forgotPassword =
+      "/customers/forgot-password/";
+
+  static const String resetPassword =
+      "/customers/reset-password/";
+
   static const String refresh =
       "/token/refresh/";
+
+  // ==========================================================
+  // Notifications
+  // ==========================================================
+
+  static const String registerFcmToken =
+      "/notifications/fcm-token/";
+
 
   // ==========================================================
   // Home

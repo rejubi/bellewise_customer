@@ -25,18 +25,21 @@ class RegisterController {
 
       return null;
     } on DioException catch (e) {
-      if (e.response?.data is Map) {
-        final data = e.response!.data as Map;
+      final data = e.response?.data;
 
+      if (data is Map<String, dynamic>) {
         for (final value in data.values) {
           if (value is List && value.isNotEmpty) {
             return value.first.toString();
           }
-          return value.toString();
+
+          if (value is String) {
+            return value;
+          }
         }
       }
 
-      return "Registration failed.";
+      return e.response?.statusMessage ?? "Registration failed.";
     } catch (_) {
       return "Something went wrong.";
     }
