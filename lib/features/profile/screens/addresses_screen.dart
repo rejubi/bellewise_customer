@@ -29,7 +29,6 @@ class _AddressesScreenState
   @override
   void initState() {
     super.initState();
-
     _future = controller.loadAddresses();
   }
 
@@ -41,7 +40,6 @@ class _AddressesScreenState
 
   Future<void> _delete(int id) async {
     await controller.deleteAddress(id);
-
     _refresh();
   }
 
@@ -51,10 +49,12 @@ class _AddressesScreenState
     );
 
     if (result == true && mounted) {
-      setState(() {
-        _future = controller.loadAddresses();
-      });
+      _refresh();
     }
+  }
+
+  void _selectAddress(AddressModel address) {
+    context.pop(address);
   }
 
   @override
@@ -102,7 +102,8 @@ class _AddressesScreenState
                     Icon(
                       Icons.location_on_outlined,
                       size: 80,
-                      color: Colors.grey.shade400,
+                      color:
+                      Colors.grey.shade400,
                     ),
 
                     const SizedBox(height: 20),
@@ -123,8 +124,8 @@ class _AddressesScreenState
                       textAlign:
                       TextAlign.center,
                       style: TextStyle(
-                        color:
-                        Colors.grey.shade600,
+                        color: Colors
+                            .grey.shade600,
                       ),
                     ),
 
@@ -197,11 +198,19 @@ class _AddressesScreenState
                     const EdgeInsets.only(
                       bottom: 16,
                     ),
-                    child: AddressCard(
-                      address: item,
-                      onDelete: () {
-                        _delete(item.id);
-                      },
+                    child: InkWell(
+                      borderRadius:
+                      BorderRadius.circular(
+                        18,
+                      ),
+                      onTap: () =>
+                          _selectAddress(item),
+                      child: AddressCard(
+                        address: item,
+                        onDelete: () {
+                          _delete(item.id);
+                        },
+                      ),
                     ),
                   ),
                 ),

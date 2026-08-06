@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
+import '../../../core/services/location_service.dart';
+import '../../cart/controllers/cart_controller.dart';
 import '../../cart/models/cart_model.dart';
-import '../widgets/checkout_item_card.dart';
+import '../../cart/models/cart_pricing_model.dart';
+import '../../profile/models/address_model.dart';
 import '../widgets/address_card.dart';
+import '../widgets/checkout_item_card.dart';
 import '../widgets/checkout_summary.dart';
 import '../widgets/notes_field.dart';
 import '../widgets/phone_field.dart';
-import 'payment_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final CartModel cart;
@@ -27,21 +30,72 @@ class _CheckoutScreenState
     extends State<CheckoutScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController
-  _addressController = TextEditingController();
+  final CartController _cartController =
+  CartController();
+
+  CartPricingModel? _pricing;
+
+  bool _loadingPricing = true;
+
+  String? _selectedAddress;
 
   final TextEditingController
-  _phoneController = TextEditingController();
+  _phoneController =
+  TextEditingController();
 
   final TextEditingController
-  _notesController = TextEditingController();
+  _notesController =
+  TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _selectedAddress =
+        LocationService.currentAddress;
+
+    _loadPricing();
+  }
+
+  Future<void> _loadPricing() async {
+    try {
+      final pricing =
+      await _cartController.loadPricing();
+
+      if (!mounted) return;
+
+      setState(() {
+        _pricing = pricing;
+        _loadingPricing = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _loadingPricing = false;
+      });
+    }
+  }
 
   @override
   void dispose() {
-    _addressController.dispose();
     _phoneController.dispose();
     _notesController.dispose();
     super.dispose();
+  }
+
+  Future<void> _changeAddress() async {
+    final result =
+    await context.push<AddressModel>(
+      "/profile/addresses",
+    );
+
+    if (result != null && mounted) {
+      setState(() {
+        _selectedAddress =
+            result.fullAddress;
+      });
+    }
   }
 
   @override
@@ -49,7 +103,8 @@ class _CheckoutScreenState
     final cart = widget.cart;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor:
+      AppColors.background,
 
       appBar: AppBar(
         title: const Text("Checkout"),
@@ -58,7 +113,8 @@ class _CheckoutScreenState
       bottomNavigationBar: SafeArea(
         top: false,
         child: Container(
-          padding: const EdgeInsets.fromLTRB(
+          padding:
+          const EdgeInsets.fromLTRB(
             16,
             12,
             16,
@@ -68,9 +124,8 @@ class _CheckoutScreenState
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(
-                  alpha: 0.05,
-                ),
+                color: Colors.black
+                    .withValues(alpha: 0.05),
                 blurRadius: 12,
                 offset: const Offset(0, -2),
               ),
@@ -79,8 +134,11 @@ class _CheckoutScreenState
           child: SizedBox(
             height: 56,
             child: ElevatedButton(
-              onPressed: _continue,
-              style: ElevatedButton.styleFrom(
+              onPressed: _loadingPricing
+                  ? null
+                  : _continue,
+              style:
+              ElevatedButton.styleFrom(
                 backgroundColor:
                 AppColors.primary,
                 foregroundColor:
@@ -93,7 +151,17 @@ class _CheckoutScreenState
                   ),
                 ),
               ),
-              child: const Text(
+              child: _loadingPricing
+                  ? const SizedBox(
+                height: 22,
+                width: 22,
+                child:
+                CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+                  : const Text(
                 "Continue",
                 style: TextStyle(
                   fontSize: 16,
@@ -109,11 +177,12 @@ class _CheckoutScreenState
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding:
+          const EdgeInsets.all(16),
           children: [
             AddressCard(
-              controller:
-              _addressController,
+              address: _selectedAddress,
+              onChange: _changeAddress,
             ),
 
             const SizedBox(height: 18),
@@ -144,21 +213,41 @@ class _CheckoutScreenState
             const SizedBox(height: 12),
 
             ...cart.items.map(
-                  (item) => CheckoutItemCard(
-                item: item,
-              ),
+                  (item) =>
+                  CheckoutItemCard(
+                    item: item,
+                  ),
             ),
 
             const SizedBox(height: 24),
 
-            CheckoutSummary(
-              subtotal: cart.subtotal,
-              deliveryFee:
-              cart.deliveryFee,
-              serviceFee:
-              cart.serviceFee,
-              total: cart.total,
-            ),
+            if (_loadingPricing)
+              const Center(
+                child:
+                CircularProgressIndicator(),
+              )
+            else if (_pricing != null)
+              CheckoutSummary(
+                subtotal:
+                _pricing!.subtotal,
+                deliveryFee:
+                _pricing!.deliveryFee,
+                serviceFee:
+                _pricing!.serviceFee,
+                vat: _pricing!.vat,
+                total: _pricing!.total,
+              )
+            else
+              CheckoutSummary(
+                subtotal:
+                cart.subtotal,
+                deliveryFee:
+                cart.deliveryFee,
+                serviceFee:
+                cart.serviceFee,
+                vat: 0,
+                total: cart.total,
+              ),
 
             const SizedBox(height: 24),
           ],
@@ -168,7 +257,23 @@ class _CheckoutScreenState
   }
 
   void _continue() {
-    if (!_formKey.currentState!.validate()) {
+    final address =
+        _selectedAddress?.trim() ?? "";
+
+    if (address.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Please select a delivery address.",
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (!_formKey.currentState!
+        .validate()) {
       return;
     }
 
@@ -176,8 +281,8 @@ class _CheckoutScreenState
       "/payment",
       extra: {
         "cart": widget.cart,
-        "address":
-        _addressController.text.trim(),
+        "pricing": _pricing,
+        "address": address,
         "phone":
         _phoneController.text.trim(),
         "note":

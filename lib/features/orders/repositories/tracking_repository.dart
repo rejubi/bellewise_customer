@@ -1,4 +1,5 @@
 import '../../../core/api/api_client.dart';
+import '../../../core/api/endpoints.dart';
 import '../models/tracking_model.dart';
 
 class TrackingRepository {
@@ -6,7 +7,7 @@ class TrackingRepository {
       int orderId,
       ) async {
     final response = await ApiClient.dio.get(
-      "/orders/$orderId/tracking/",
+      Endpoints.orderTracking(orderId),
     );
 
     return TrackingModel.fromJson(

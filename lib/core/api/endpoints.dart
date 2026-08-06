@@ -31,7 +31,6 @@ class Endpoints {
   static const String registerFcmToken =
       "/notifications/fcm-token/";
 
-
   // ==========================================================
   // Home
   // ==========================================================
@@ -49,15 +48,14 @@ class Endpoints {
   static const String addToCart =
       "/cart/add/";
 
+  static const String cartPricing =
+      "/cart/pricing/";
+
+  static const String clearCart =
+      "/cart/clear/";
+
   static const String cartItem =
       "/cart/item";
-
-  // ==========================================================
-  // Orders
-  // ==========================================================
-
-  static const String createOrder =
-      "/orders/create/";
 
   // ==========================================================
   // Catalog
@@ -77,16 +75,24 @@ class Endpoints {
       "/search/";
 
   // ==========================================================
-// Orders
-// ==========================================================
+  // Orders
+  // ==========================================================
 
   static const String orders =
       "/orders/";
+
+  static const String createOrder =
+      "/orders/create/";
 
   static String orderDetail(
       int orderId,
       ) =>
       "/orders/detail/$orderId/";
+
+  static String orderTracking(
+      int orderId,
+      ) =>
+      "/orders/tracking/$orderId/";
 
   static String cancelOrder(
       int orderId,

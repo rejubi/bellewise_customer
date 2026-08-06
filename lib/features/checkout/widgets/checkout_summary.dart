@@ -6,6 +6,7 @@ class CheckoutSummary extends StatelessWidget {
   final double subtotal;
   final double deliveryFee;
   final double serviceFee;
+  final double vat;
   final double total;
 
   const CheckoutSummary({
@@ -13,6 +14,7 @@ class CheckoutSummary extends StatelessWidget {
     required this.subtotal,
     required this.deliveryFee,
     required this.serviceFee,
+    required this.vat,
     required this.total,
   });
 
@@ -22,8 +24,9 @@ class CheckoutSummary extends StatelessWidget {
         bool bold = false,
       }) {
     return Padding(
-      padding:
-      const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(
+        vertical: 6,
+      ),
       child: Row(
         children: [
           Expanded(
@@ -38,7 +41,7 @@ class CheckoutSummary extends StatelessWidget {
             ),
           ),
           Text(
-            "₦${value.toStringAsFixed(0)}",
+            "₦${value.toStringAsFixed(2)}",
             style: TextStyle(
               color: bold
                   ? AppColors.primary
@@ -82,8 +85,14 @@ class CheckoutSummary extends StatelessWidget {
               serviceFee,
             ),
 
+            _row(
+              "VAT",
+              vat,
+            ),
+
             const Padding(
-              padding: EdgeInsets.symmetric(
+              padding:
+              EdgeInsets.symmetric(
                 vertical: 12,
               ),
               child: Divider(),

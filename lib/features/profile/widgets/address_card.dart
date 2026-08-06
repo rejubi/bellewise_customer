@@ -23,13 +23,13 @@ class AddressCard extends StatelessWidget {
       color: Colors.white,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         side: BorderSide(
           color: Colors.grey.shade200,
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment:
           CrossAxisAlignment.start,
@@ -37,22 +37,23 @@ class AddressCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 46,
-                  height: 46,
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
                     color: AppColors.primary.withOpacity(.1),
                     borderRadius:
-                    BorderRadius.circular(12),
+                    BorderRadius.circular(10),
                   ),
                   child: Icon(
                     isHome
                         ? Icons.home_outlined
                         : Icons.location_on_outlined,
                     color: AppColors.primary,
+                    size: 22,
                   ),
                 ),
 
-                const SizedBox(width: 14),
+                const SizedBox(width: 12),
 
                 Expanded(
                   child: Column(
@@ -62,7 +63,7 @@ class AddressCard extends StatelessWidget {
                       Text(
                         address.title,
                         style: const TextStyle(
-                          fontSize: 17,
+                          fontSize: 16,
                           fontWeight:
                           FontWeight.bold,
                         ),
@@ -72,20 +73,20 @@ class AddressCard extends StatelessWidget {
                         Padding(
                           padding:
                           const EdgeInsets.only(
-                            top: 4,
+                            top: 3,
                           ),
                           child: Container(
                             padding:
                             const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
+                              horizontal: 8,
+                              vertical: 3,
                             ),
                             decoration: BoxDecoration(
                               color: AppColors.primary
                                   .withOpacity(.12),
                               borderRadius:
                               BorderRadius.circular(
-                                20,
+                                18,
                               ),
                             ),
                             child: const Text(
@@ -93,7 +94,7 @@ class AddressCard extends StatelessWidget {
                               style: TextStyle(
                                 color:
                                 AppColors.primary,
-                                fontSize: 12,
+                                fontSize: 11,
                                 fontWeight:
                                 FontWeight.w600,
                               ),
@@ -106,26 +107,27 @@ class AddressCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 14),
 
             Text(
               address.recipientName,
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
-                fontSize: 15,
+                fontSize: 14,
               ),
             ),
 
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
 
             Text(
               address.phoneNumber,
               style: TextStyle(
                 color: Colors.grey.shade700,
+                fontSize: 13,
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
             Row(
               crossAxisAlignment:
@@ -133,17 +135,18 @@ class AddressCard extends StatelessWidget {
               children: [
                 Icon(
                   Icons.place_outlined,
-                  size: 18,
+                  size: 16,
                   color: Colors.grey.shade600,
                 ),
 
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
 
                 Expanded(
                   child: Text(
                     address.fullAddress,
                     style: const TextStyle(
-                      height: 1.5,
+                      fontSize: 13,
+                      height: 1.35,
                     ),
                   ),
                 ),
@@ -151,7 +154,7 @@ class AddressCard extends StatelessWidget {
             ),
 
             if (address.landmark.isNotEmpty) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
 
               Row(
                 crossAxisAlignment:
@@ -159,29 +162,32 @@ class AddressCard extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.flag_outlined,
-                    size: 18,
+                    size: 16,
                     color: Colors.grey.shade600,
                   ),
 
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
 
                   Expanded(
                     child: Text(
                       address.landmark,
+                      style: const TextStyle(
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ],
               ),
             ],
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 14),
 
             Divider(
               color: Colors.grey.shade200,
               height: 1,
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 6),
 
             Row(
               mainAxisAlignment:
@@ -189,14 +195,26 @@ class AddressCard extends StatelessWidget {
               children: [
                 TextButton.icon(
                   onPressed: onDelete,
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(0, 34),
+                    tapTargetSize:
+                    MaterialTapTargetSize
+                        .shrinkWrap,
+                    padding:
+                    const EdgeInsets.symmetric(
+                      horizontal: 8,
+                    ),
+                  ),
                   icon: const Icon(
                     Icons.delete_outline,
                     color: Colors.red,
+                    size: 18,
                   ),
                   label: const Text(
                     "Delete",
                     style: TextStyle(
                       color: Colors.red,
+                      fontSize: 13,
                     ),
                   ),
                 ),

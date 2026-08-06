@@ -7,9 +7,11 @@ import '../controllers/checkout_controller.dart';
 import '../models/checkout_request_model.dart';
 import '../widgets/checkout_summary.dart';
 import '../widgets/payment_option_card.dart';
+import '../../cart/models/cart_pricing_model.dart';
 
 class PaymentScreen extends StatefulWidget {
   final CartModel cart;
+  final CartPricingModel pricing;
   final String address;
   final String phone;
   final String note;
@@ -17,6 +19,7 @@ class PaymentScreen extends StatefulWidget {
   const PaymentScreen({
     super.key,
     required this.cart,
+    required this.pricing,
     required this.address,
     required this.phone,
     required this.note,
@@ -35,7 +38,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cart = widget.cart;
+    final pricing = widget.pricing;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -92,7 +95,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
           PaymentOptionCard(
             title: "Bank Transfer",
-            subtitle: "Transfer after placing your order.",
+            subtitle: "Pay now for your order.",
             icon: Icons.account_balance_outlined,
             selected: paymentMethod == "BANK_TRANSFER",
             onTap: () {
@@ -105,10 +108,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
           const SizedBox(height: 28),
 
           CheckoutSummary(
-            subtotal: cart.subtotal,
-            deliveryFee: cart.deliveryFee,
-            serviceFee: cart.serviceFee,
-            total: cart.total,
+            subtotal: pricing.subtotal,
+            deliveryFee: pricing.deliveryFee,
+            serviceFee: pricing.serviceFee,
+            vat: pricing.vat,
+            total: pricing.total,
           ),
         ],
       ),

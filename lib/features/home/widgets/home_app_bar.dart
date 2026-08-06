@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/services/location_service.dart';
+
 class HomeAppBar extends StatelessWidget {
   final Map<String, dynamic> customer;
   final int notifications;
@@ -26,8 +28,16 @@ class HomeAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final address =
+    final gpsAddress = LocationService.currentAddress?.trim() ?? "";
+
+    final savedAddress =
     (customer["full_address"] ?? "").toString().trim();
+
+    final address = gpsAddress.isNotEmpty
+        ? gpsAddress
+        : savedAddress.isNotEmpty
+        ? savedAddress
+        : "Add delivery address";
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -45,7 +55,9 @@ class HomeAppBar extends StatelessWidget {
                     color: Colors.grey,
                   ),
                 ),
+
                 const SizedBox(height: 4),
+
                 Text(
                   customer["first_name"] ?? "",
                   style: const TextStyle(
@@ -53,7 +65,9 @@ class HomeAppBar extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+
                 const SizedBox(height: 8),
+
                 Row(
                   children: [
                     const Icon(
@@ -61,12 +75,12 @@ class HomeAppBar extends StatelessWidget {
                       size: 16,
                       color: Colors.orange,
                     ),
+
                     const SizedBox(width: 4),
+
                     Expanded(
                       child: Text(
-                        address.isEmpty
-                            ? "Add delivery address"
-                            : address,
+                        address,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -80,12 +94,14 @@ class HomeAppBar extends StatelessWidget {
               ],
             ),
           ),
+
           Stack(
             children: [
               const Icon(
                 Icons.notifications_outlined,
                 size: 30,
               ),
+
               if (notifications > 0)
                 Positioned(
                   right: 0,

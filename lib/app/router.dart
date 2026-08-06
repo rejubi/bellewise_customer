@@ -27,6 +27,7 @@ import '../features/profile/screens/about_screen.dart';
 import '../features/profile/screens/add_address_screen.dart';
 import '../features/auth/forgot_password/forgot_password_screen.dart';
 import '../features/auth/reset_password/reset_password_screen.dart';
+import '../features/cart/models/cart_pricing_model.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -136,6 +137,7 @@ final router = GoRouter(
 
         return PaymentScreen(
           cart: data["cart"] as CartModel,
+          pricing: data["pricing"] as CartPricingModel,
           address: data["address"] as String,
           phone: data["phone"] as String,
           note: data["note"] as String,

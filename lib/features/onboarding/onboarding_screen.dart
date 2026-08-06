@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/theme.dart';
+import '../../core/services/location_service.dart';
 import 'onboarding_page.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -37,6 +38,43 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
   ];
 
+  Future<void> _finishOnboarding() async {
+    final allow = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Enable Location"),
+          content: const Text(
+            "BelleWise uses your location to:\n\n"
+                "• Show restaurants near you\n"
+                "• Detect your delivery address automatically\n"
+                "• Improve rider navigation and delivery accuracy\n\n"
+                "You can change this later in your phone settings.",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text("Skip"),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text("Continue"),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (allow == true) {
+      await LocationService.initialize();
+    }
+
+    if (!mounted) return;
+
+    context.go('/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +85,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Align(
               alignment: Alignment.topRight,
               child: TextButton(
-                onPressed: () => context.go('/login'),
+                onPressed: _finishOnboarding,
                 child: const Text("Skip"),
               ),
             ),
@@ -130,7 +168,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                   onPressed: () {
                     if (currentPage == pages.length - 1) {
-                      context.go('/login');
+                      _finishOnboarding();
                     } else {
                       _controller.nextPage(
                         duration: const Duration(milliseconds: 400),

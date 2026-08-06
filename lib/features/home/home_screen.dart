@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/theme.dart';
 import '../../core/errors/error_handler.dart';
+import '../../core/services/location_service.dart';
 import '../../core/widgets/error_view.dart';
 import '../cart/controllers/cart_state.dart';
 import 'controllers/home_controller.dart';
@@ -22,7 +23,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with WidgetsBindingObserver {
   final HomeController homeController = HomeController();
   final CartState cartState = CartState.instance;
 
@@ -32,14 +34,42 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addObserver(this);
+
     _homeFuture = homeController.loadHome();
 
     if (!cartState.isLoaded) {
       cartState.load();
     }
+
+    _refreshLocation();
+  }
+
+  Future<void> _refreshLocation() async {
+    await LocationService.refresh();
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(
+      AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshLocation();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   Future<void> _refresh() async {
+    await LocationService.refresh();
+
     setState(() {
       _homeFuture = homeController.loadHome();
     });
@@ -101,21 +131,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (snapshot.connectionState ==
                     ConnectionState.waiting) {
                   return const Center(
-                    child: CircularProgressIndicator(),
+                    child:
+                    CircularProgressIndicator(),
                   );
                 }
 
                 if (snapshot.hasError) {
                   return ErrorView(
-                    message:
-                    ErrorHandler.getMessage(snapshot.error),
+                    message: ErrorHandler.getMessage(
+                      snapshot.error,
+                    ),
                     onRetry: _refresh,
                   );
                 }
 
                 if (!snapshot.hasData) {
                   return const Center(
-                    child: Text("No data available"),
+                    child:
+                    Text("No data available"),
                   );
                 }
 
@@ -129,7 +162,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       HomeAppBar(
                         customer: home.customer,
-                        notifications: home.notifications,
+                        notifications:
+                        home.notifications,
                       ),
 
                       const SizedBox(height: 20),
@@ -140,19 +174,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       if (home.promotions.isNotEmpty)
                         PromotionSlider(
-                          promotions: home.promotions,
+                          promotions:
+                          home.promotions,
                         ),
 
                       const SizedBox(height: 20),
 
                       CategorySection(
-                        categories: home.categories,
+                        categories:
+                        home.categories,
                       ),
 
                       const SizedBox(height: 25),
 
                       RestaurantSection(
-                        restaurants: home.restaurants,
+                        restaurants:
+                        home.restaurants,
                       ),
 
                       const SizedBox(height: 25),

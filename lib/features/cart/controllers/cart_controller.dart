@@ -1,5 +1,6 @@
 import '../data/cart_repository.dart';
 import '../models/cart_model.dart';
+import '../models/cart_pricing_model.dart';
 
 class CartController {
   final CartRepository repository = CartRepository();
@@ -8,6 +9,14 @@ class CartController {
     final response = await repository.loadCart();
 
     return CartModel.fromJson(
+      response.data,
+    );
+  }
+
+  Future<CartPricingModel> loadPricing() async {
+    final response = await repository.loadPricing();
+
+    return CartPricingModel.fromJson(
       response.data,
     );
   }

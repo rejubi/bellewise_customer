@@ -10,6 +10,12 @@ class CartRepository {
     );
   }
 
+  Future<Response> loadPricing() {
+    return ApiClient.dio.get(
+      Endpoints.cartPricing,
+    );
+  }
+
   Future<Response> addToCart({
     required int productId,
     int quantity = 1,
@@ -43,12 +49,9 @@ class CartRepository {
     );
   }
 
-  // ==============================
-  // CLEAR CART (LOCAL ONLY)
-  // ==============================
-
-  Future<void> clearCart() async {
-    // No backend endpoint exists.
-    // CartState will clear the in-memory cart.
+  Future<Response> clearCart() {
+    return ApiClient.dio.delete(
+      Endpoints.clearCart,
+    );
   }
 }
