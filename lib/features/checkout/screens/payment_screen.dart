@@ -3,11 +3,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
 import '../../cart/models/cart_model.dart';
+import '../../cart/models/cart_pricing_model.dart';
 import '../controllers/checkout_controller.dart';
 import '../models/checkout_request_model.dart';
 import '../widgets/checkout_summary.dart';
 import '../widgets/payment_option_card.dart';
-import '../../cart/models/cart_pricing_model.dart';
 
 class PaymentScreen extends StatefulWidget {
   final CartModel cart;
@@ -42,9 +42,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+
       appBar: AppBar(
         title: const Text("Payment"),
       ),
+
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -52,6 +54,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
             height: 56,
             child: ElevatedButton(
               onPressed: loading ? null : _placeOrder,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
               child: loading
                   ? const SizedBox(
                 width: 22,
@@ -61,11 +70,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   color: Colors.white,
                 ),
               )
-                  : const Text("Place Order"),
+                  : const Text(
+                "Place Order",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
         ),
       ),
+
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -79,12 +95,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
           const SizedBox(height: 18),
 
+          // -----------------------------------------
+          // CASH ON DELIVERY
+          // -----------------------------------------
+
           PaymentOptionCard(
             title: "Cash on Delivery",
             subtitle: "Pay when your order arrives.",
             icon: Icons.payments_outlined,
             selected: paymentMethod == "CASH",
             onTap: () {
+              if (loading) return;
+
               setState(() {
                 paymentMethod = "CASH";
               });
@@ -93,19 +115,29 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
           const SizedBox(height: 16),
 
+          // -----------------------------------------
+          // BANK TRANSFER
+          // -----------------------------------------
+
           PaymentOptionCard(
             title: "Bank Transfer",
             subtitle: "Pay now for your order.",
             icon: Icons.account_balance_outlined,
-            selected: paymentMethod == "BANK_TRANSFER",
+            selected: paymentMethod == "TRANSFER",
             onTap: () {
+              if (loading) return;
+
               setState(() {
-                paymentMethod = "BANK_TRANSFER";
+                paymentMethod = "TRANSFER";
               });
             },
           ),
 
           const SizedBox(height: 28),
+
+          // -----------------------------------------
+          // ORDER SUMMARY
+          // -----------------------------------------
 
           CheckoutSummary(
             subtotal: pricing.subtotal,
@@ -114,12 +146,80 @@ class _PaymentScreenState extends State<PaymentScreen> {
             vat: pricing.vat,
             total: pricing.total,
           ),
+
+          const SizedBox(height: 24),
+
+          // -----------------------------------------
+          // CASH INFORMATION
+          // -----------------------------------------
+
+          if (paymentMethod == "CASH")
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: AppColors.primary,
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      "You will pay the rider when your order is delivered.",
+                      style: TextStyle(
+                        fontSize: 14,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // -----------------------------------------
+          // TRANSFER INFORMATION
+          // -----------------------------------------
+
+          if (paymentMethod == "TRANSFER")
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.account_balance_outlined,
+                    color: AppColors.primary,
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      "You will be redirected to the payment process to complete your bank transfer.",
+                      style: TextStyle(
+                        fontSize: 14,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );
   }
 
   Future<void> _placeOrder() async {
+    if (loading) return;
+
     setState(() {
       loading = true;
     });
@@ -132,17 +232,32 @@ class _PaymentScreenState extends State<PaymentScreen> {
         paymentMethod: paymentMethod,
       );
 
-      final orderId = await _controller.createOrder(request);
+      // -----------------------------------------
+      // CREATE ORDER
+      // -----------------------------------------
+
+      final publicId = await _controller.createOrder(
+        request,
+      );
 
       if (!mounted) return;
 
-      context.go("/order-success/$orderId");
+      // -----------------------------------------
+      // GO TO SUCCESS SCREEN
+      // -----------------------------------------
+
+      context.go(
+        "/order-success/$publicId",
+      );
     } catch (e) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.toString()),
+          content: Text(
+            e.toString(),
+          ),
+          backgroundColor: Colors.red,
         ),
       );
     } finally {

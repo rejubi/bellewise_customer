@@ -88,7 +88,7 @@ class OrderCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          "Order #${order.id}",
+                          "Order #${order.publicId}",
                           style: TextStyle(
                             color: Colors.grey.shade600,
                           ),

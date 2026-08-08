@@ -5,14 +5,21 @@ class CheckoutController {
   final CheckoutRepository _repository =
   CheckoutRepository();
 
-  Future<int> createOrder(
+  Future<String> createOrder(
       CheckoutRequestModel request,
       ) async {
     final response =
-    await _repository.createOrder(
-      request,
-    );
+    await _repository.createOrder(request);
 
-    return response.data["order_id"];
+    final data = response.data;
+
+    if (data == null ||
+        data["public_id"] == null) {
+      throw Exception(
+        "Order created, but no public ID returned.",
+      );
+    }
+
+    return data["public_id"].toString();
   }
 }

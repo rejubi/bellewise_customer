@@ -3,6 +3,7 @@ import 'order_status.dart';
 
 class OrderModel {
   final int id;
+  final String publicId;
   final int customer;
   final String customerName;
   final String vendorName;
@@ -26,6 +27,7 @@ class OrderModel {
 
   const OrderModel({
     required this.id,
+    required this.publicId,
     required this.customer,
     required this.customerName,
     required this.vendorName,
@@ -48,14 +50,18 @@ class OrderModel {
       ) {
     return OrderModel(
       id: json["id"],
+      publicId: json["public_id"] ?? "",
 
       customer: json["customer"],
 
-      customerName: json["customer_name"] ?? "",
+      customerName:
+      json["customer_name"] ?? "",
 
-      vendorName: json["vendor_name"] ?? "",
+      vendorName:
+      json["vendor_name"] ?? "",
 
-      status: json["status"] ?? "",
+      status:
+      json["status"] ?? "",
 
       subtotal: double.parse(
         json["subtotal"].toString(),
@@ -103,9 +109,11 @@ class OrderModel {
   OrderStatus get orderStatus =>
       OrderStatusExtension.fromString(status);
 
-  bool get canCancel => orderStatus.canCancel;
+  bool get canCancel =>
+      orderStatus.canCancel;
 
-  bool get isActive => orderStatus.isActive;
+  bool get isActive =>
+      orderStatus.isActive;
 
   int get totalItems {
     int count = 0;
@@ -117,11 +125,17 @@ class OrderModel {
     return count;
   }
 
-  /// Display-friendly payment method
+  // ==========================================
+  // DISPLAY-FRIENDLY PAYMENT METHOD
+  // ==========================================
+
   String get paymentMethodLabel {
     switch (paymentMethod.toUpperCase()) {
       case "CASH":
         return "Cash on Delivery";
+
+      case "TRANSFER":
+        return "Bank Transfer";
 
       case "BANK_TRANSFER":
         return "Bank Transfer";
@@ -133,11 +147,17 @@ class OrderModel {
         return "Wallet";
 
       default:
-        return paymentMethod.replaceAll("_", " ");
+        return paymentMethod.replaceAll(
+          "_",
+          " ",
+        );
     }
   }
 
-  /// Display-friendly payment status
+  // ==========================================
+  // DISPLAY-FRIENDLY PAYMENT STATUS
+  // ==========================================
+
   String get paymentStatusLabel {
     switch (paymentStatus.toUpperCase()) {
       case "PAID":

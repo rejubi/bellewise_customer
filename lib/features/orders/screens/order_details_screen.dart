@@ -165,15 +165,12 @@ const SizedBox(
 height:
 4),
 
-Text(
-"Order #${order.id}",
-style:
-TextStyle(
-color: Colors
-.grey
-.shade600,
-),
-),
+  Text(
+    "Order #${order.publicId}",
+    style: TextStyle(
+      color: Colors.grey.shade600,
+    ),
+  ),
 
 const SizedBox(
 height:
@@ -436,8 +433,6 @@ const SizedBox(height: 20),
             "Payment Status",
             order.paymentStatusLabel,
           ),
-
-          const Divider(height: 30),
 
           const Divider(height: 30),
 

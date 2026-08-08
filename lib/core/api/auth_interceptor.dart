@@ -14,7 +14,18 @@ class AuthInterceptor extends Interceptor {
       ) async {
     final token = await storage.getAccessToken();
 
-    if (token != null && token.isNotEmpty) {
+    // Public authentication endpoints do not need
+    // an Authorization header.
+    final isPublicEndpoint =
+        options.path == Endpoints.login ||
+            options.path == Endpoints.register ||
+            options.path == Endpoints.forgotPassword ||
+            options.path == Endpoints.resetPassword ||
+            options.path == Endpoints.refresh;
+
+    if (!isPublicEndpoint &&
+        token != null &&
+        token.isNotEmpty) {
       options.headers["Authorization"] = "Bearer $token";
     }
 
@@ -26,8 +37,24 @@ class AuthInterceptor extends Interceptor {
       DioException err,
       ErrorInterceptorHandler handler,
       ) async {
-    // Only attempt refresh for Unauthorized responses.
+    // Only handle 401 responses.
     if (err.response?.statusCode != 401) {
+      return handler.next(err);
+    }
+
+    final request = err.requestOptions;
+
+    // Never try to refresh a token for public authentication
+    // endpoints. A 401 from registration/login/etc. should
+    // simply be returned to the caller.
+    final isPublicEndpoint =
+        request.path == Endpoints.login ||
+            request.path == Endpoints.register ||
+            request.path == Endpoints.forgotPassword ||
+            request.path == Endpoints.resetPassword ||
+            request.path == Endpoints.refresh;
+
+    if (isPublicEndpoint) {
       return handler.next(err);
     }
 
@@ -39,8 +66,11 @@ class AuthInterceptor extends Interceptor {
         return handler.next(err);
       }
 
-      // Use a fresh Dio instance to avoid recursive interception.
-      final refreshResponse = await Dio().post(
+      // Use a separate Dio instance so the refresh request
+      // does not trigger this interceptor again.
+      final refreshDio = Dio();
+
+      final refreshResponse = await refreshDio.post(
         "${Endpoints.baseUrl}${Endpoints.refresh}",
         data: {
           "refresh": refresh,
@@ -58,11 +88,17 @@ class AuthInterceptor extends Interceptor {
         return handler.next(err);
       }
 
-      final String newAccess = refreshResponse.data["access"];
+      final newAccess =
+      refreshResponse.data["access"] as String?;
 
-      // JWT rotation may or may not return a new refresh token.
-      final String newRefresh =
-          refreshResponse.data["refresh"] ?? refresh;
+      if (newAccess == null || newAccess.isEmpty) {
+        await storage.clear();
+        return handler.next(err);
+      }
+
+      final newRefresh =
+          refreshResponse.data["refresh"] as String? ??
+              refresh;
 
       await storage.saveTokens(
         access: newAccess,
@@ -70,14 +106,14 @@ class AuthInterceptor extends Interceptor {
       );
 
       // Retry the original request with the new access token.
-      final request = err.requestOptions;
+      request.headers["Authorization"] =
+      "Bearer $newAccess";
 
-      request.headers["Authorization"] = "Bearer $newAccess";
-
-      final response = await ApiClient.dio.fetch(request);
+      final response =
+      await ApiClient.dio.fetch(request);
 
       return handler.resolve(response);
-    } catch (e) {
+    } catch (_) {
       await storage.clear();
       return handler.next(err);
     }

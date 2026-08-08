@@ -92,7 +92,7 @@ class Endpoints {
   static String orderTracking(
       int orderId,
       ) =>
-      "/orders/tracking/$orderId/";
+      "/orders/$orderId/tracking/";
 
   static String cancelOrder(
       int orderId,

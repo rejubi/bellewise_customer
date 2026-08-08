@@ -28,6 +28,7 @@ import '../features/profile/screens/add_address_screen.dart';
 import '../features/auth/forgot_password/forgot_password_screen.dart';
 import '../features/auth/reset_password/reset_password_screen.dart';
 import '../features/cart/models/cart_pricing_model.dart';
+import '../features/favorites/screens/favorites_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -94,6 +95,16 @@ final router = GoRouter(
     ),
 
     // ==========================================
+    // FAVORITES
+    // ==========================================
+
+    GoRoute(
+      path: '/favorites',
+      builder: (context, state) =>
+      const FavoritesScreen(),
+    ),
+
+    // ==========================================
     // SEARCH
     // ==========================================
 
@@ -150,14 +161,13 @@ final router = GoRouter(
     // ==========================================
 
     GoRoute(
-      path: '/order-success/:id',
+      path: '/order-success/:publicId',
       builder: (context, state) {
-        final orderId = int.parse(
-          state.pathParameters["id"]!,
-        );
+        final publicId =
+        state.pathParameters["publicId"]!;
 
         return OrderSuccessScreen(
-          orderId: orderId,
+          publicId: publicId,
         );
       },
     ),

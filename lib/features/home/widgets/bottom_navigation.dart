@@ -44,25 +44,37 @@ class HomeBottomNavigation extends StatelessWidget {
               icon: Badge(
                 isLabelVisible: count > 0,
                 label: Text("$count"),
-                child: const Icon(Icons.shopping_cart_outlined),
+                child: const Icon(
+                  Icons.shopping_cart_outlined,
+                ),
               ),
               activeIcon: Badge(
                 isLabelVisible: count > 0,
                 label: Text("$count"),
-                child: const Icon(Icons.shopping_cart),
+                child: const Icon(
+                  Icons.shopping_cart,
+                ),
               ),
               label: "Cart",
             ),
 
             const BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_border),
-              activeIcon: Icon(Icons.favorite),
+              icon: Icon(
+                Icons.favorite_border,
+              ),
+              activeIcon: Icon(
+                Icons.favorite,
+              ),
               label: "Favorites",
             ),
 
             const BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
+              icon: Icon(
+                Icons.person_outline,
+              ),
+              activeIcon: Icon(
+                Icons.person,
+              ),
               label: "Profile",
             ),
           ],

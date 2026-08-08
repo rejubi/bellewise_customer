@@ -4,11 +4,11 @@ import 'package:go_router/go_router.dart';
 import '../../../app/theme.dart';
 
 class OrderSuccessScreen extends StatelessWidget {
-  final int orderId;
+  final String publicId;
 
   const OrderSuccessScreen({
     super.key,
-    required this.orderId,
+    required this.publicId,
   });
 
   @override
@@ -54,7 +54,8 @@ class OrderSuccessScreen extends StatelessWidget {
                 const SizedBox(height: 12),
 
                 Text(
-                  "Your order has been placed successfully.\nYou can now track its progress in real time.",
+                  "Your order has been placed successfully.\n"
+                      "You can now track its progress in real time.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.grey.shade700,
@@ -85,7 +86,7 @@ class OrderSuccessScreen extends StatelessWidget {
                       const SizedBox(height: 8),
 
                       Text(
-                        "#$orderId",
+                        publicId,
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -100,23 +101,25 @@ class OrderSuccessScreen extends StatelessWidget {
 
                 SizedBox(
                   width: double.infinity,
+
                   child: FilledButton.icon(
                     icon: const Icon(
-                      Icons.location_searching,
+                      Icons.receipt_long_outlined,
                     ),
+
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(
                         vertical: 16,
                       ),
                     ),
+
                     onPressed: () {
-                      context.go(
-                        "/tracking/$orderId",
-                      );
+                      context.go("/orders");
                     },
+
                     label: const Text(
-                      "Track Order",
+                      "View My Orders",
                     ),
                   ),
                 ),
@@ -125,18 +128,22 @@ class OrderSuccessScreen extends StatelessWidget {
 
                 SizedBox(
                   width: double.infinity,
+
                   child: OutlinedButton.icon(
                     icon: const Icon(
                       Icons.home_outlined,
                     ),
+
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         vertical: 16,
                       ),
                     ),
+
                     onPressed: () {
                       context.go("/home");
                     },
+
                     label: const Text(
                       "Back to Home",
                     ),

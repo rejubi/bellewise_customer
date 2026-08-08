@@ -108,13 +108,7 @@ class _HomeScreenState extends State<HomeScreen>
                   break;
 
                 case 3:
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        "Favorites coming soon",
-                      ),
-                    ),
-                  );
+                  await context.push("/favorites");
                   break;
 
                 case 4:

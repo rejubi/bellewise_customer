@@ -32,8 +32,10 @@ class ProductDetailInfo extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ==================================================
+            // VENDOR
+            // ==================================================
 
-            /// Vendor
             Row(
               children: [
                 CircleAvatar(
@@ -52,7 +54,6 @@ class ProductDetailInfo extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
                       Text(
                         product.vendorName,
                         style: const TextStyle(
@@ -65,7 +66,6 @@ class ProductDetailInfo extends StatelessWidget {
 
                       Row(
                         children: [
-
                           const Icon(
                             Icons.star,
                             color: Colors.amber,
@@ -96,6 +96,10 @@ class ProductDetailInfo extends StatelessWidget {
 
             const SizedBox(height: 24),
 
+            // ==================================================
+            // PRODUCT NAME
+            // ==================================================
+
             Text(
               product.name,
               style: const TextStyle(
@@ -105,6 +109,10 @@ class ProductDetailInfo extends StatelessWidget {
             ),
 
             const SizedBox(height: 18),
+
+            // ==================================================
+            // PRICE
+            // ==================================================
 
             if (hasDiscount)
               Row(
@@ -142,11 +150,14 @@ class ProductDetailInfo extends StatelessWidget {
 
             const SizedBox(height: 24),
 
+            // ==================================================
+            // PRODUCT INFORMATION
+            // ==================================================
+
             Wrap(
               spacing: 10,
               runSpacing: 10,
               children: [
-
                 _chip(
                   Icons.schedule,
                   "${product.preparationTime} mins",
@@ -155,11 +166,6 @@ class ProductDetailInfo extends StatelessWidget {
                 _chip(
                   Icons.restaurant_menu,
                   product.category,
-                ),
-
-                _chip(
-                  Icons.delivery_dining,
-                  "₦${product.deliveryFee.toStringAsFixed(0)} Delivery",
                 ),
 
                 _chip(
@@ -174,6 +180,10 @@ class ProductDetailInfo extends StatelessWidget {
             ),
 
             const SizedBox(height: 30),
+
+            // ==================================================
+            // DESCRIPTION
+            // ==================================================
 
             const Text(
               "Description",
@@ -200,6 +210,10 @@ class ProductDetailInfo extends StatelessWidget {
     );
   }
 
+  // ============================================================
+  // INFORMATION CHIP
+  // ============================================================
+
   Widget _chip(
       IconData icon,
       String text,
@@ -216,7 +230,6 @@ class ProductDetailInfo extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-
           Icon(
             icon,
             size: 18,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/services/location_service.dart';
 
@@ -28,7 +29,8 @@ class HomeAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gpsAddress = LocationService.currentAddress?.trim() ?? "";
+    final gpsAddress =
+        LocationService.currentAddress?.trim() ?? "";
 
     final savedAddress =
     (customer["full_address"] ?? "").toString().trim();
@@ -95,30 +97,60 @@ class HomeAppBar extends StatelessWidget {
             ),
           ),
 
-          Stack(
-            children: [
-              const Icon(
-                Icons.notifications_outlined,
-                size: 30,
-              ),
+          // ====================================================
+          // NOTIFICATIONS
+          // ====================================================
 
-              if (notifications > 0)
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: CircleAvatar(
-                    radius: 8,
-                    backgroundColor: Colors.red,
-                    child: Text(
-                      notifications.toString(),
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: Colors.white,
-                      ),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(30),
+              onTap: () {
+                context.push("/profile/notifications");
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(6),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    const Icon(
+                      Icons.notifications_outlined,
+                      size: 30,
                     ),
-                  ),
+
+                    if (notifications > 0)
+                      Positioned(
+                        right: -2,
+                        top: -2,
+                        child: Container(
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 3,
+                          ),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            notifications > 99
+                                ? "99+"
+                                : notifications.toString(),
+                            style: const TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-            ],
+              ),
+            ),
           ),
         ],
       ),

@@ -4,10 +4,14 @@ import '../../../app/theme.dart';
 
 class ProductDetailHeader extends StatelessWidget {
   final String image;
+  final bool isFavorite;
+  final VoidCallback onFavoritePressed;
 
   const ProductDetailHeader({
     super.key,
     required this.image,
+    required this.isFavorite,
+    required this.onFavoritePressed,
   });
 
   @override
@@ -18,9 +22,11 @@ class ProductDetailHeader extends StatelessWidget {
       stretch: true,
       elevation: 0,
       backgroundColor: Colors.transparent,
+
       iconTheme: const IconThemeData(
         color: Colors.white,
       ),
+
       leading: Padding(
         padding: const EdgeInsets.all(8),
         child: CircleAvatar(
@@ -36,6 +42,7 @@ class ProductDetailHeader extends StatelessWidget {
           ),
         ),
       ),
+
       actions: [
         Padding(
           padding: const EdgeInsets.only(
@@ -46,26 +53,29 @@ class ProductDetailHeader extends StatelessWidget {
           child: CircleAvatar(
             backgroundColor: Colors.black45,
             child: IconButton(
-              onPressed: () {
-                // Favorites (next module)
-              },
-              icon: const Icon(
-                Icons.favorite_border,
-                color: Colors.white,
+              onPressed: onFavoritePressed,
+              icon: Icon(
+                isFavorite
+                    ? Icons.favorite
+                    : Icons.favorite_border,
+                color: isFavorite
+                    ? Colors.redAccent
+                    : Colors.white,
               ),
             ),
           ),
         ),
       ],
+
       flexibleSpace: FlexibleSpaceBar(
         stretchModes: const [
           StretchMode.zoomBackground,
           StretchMode.blurBackground,
         ],
+
         background: Stack(
           fit: StackFit.expand,
           children: [
-
             Image.network(
               image,
               fit: BoxFit.cover,
@@ -101,7 +111,8 @@ class ProductDetailHeader extends StatelessWidget {
               left: 24,
               bottom: 28,
               child: Container(
-                padding: const EdgeInsets.symmetric(
+                padding:
+                const EdgeInsets.symmetric(
                   horizontal: 14,
                   vertical: 8,
                 ),
@@ -113,7 +124,6 @@ class ProductDetailHeader extends StatelessWidget {
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-
                     Icon(
                       Icons.local_fire_department,
                       color: Colors.white,

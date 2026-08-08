@@ -324,38 +324,28 @@ class _ProfileScreenState
 
                         try {
 
+                          // 1. Clear the customer's server-side cart
+                          // while the access token is still available.
+                          await CartState.instance.clearCart();
+
+                          // 2. Now remove the JWT tokens.
                           await controller.logout();
 
+                          // 3. Go to login.
+                          if (!mounted) return;
 
-                          await CartState.instance
-                              .clearCart();
+                          context.go("/login");
 
+                        } catch (e) {
 
+                          if (!mounted) return;
 
-                          if(!mounted) return;
-
-
-                          context.go(
-                            "/login",
-                          );
-
-
-                        } catch(e) {
-
-
-                          if(!mounted) return;
-
-
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(
-
+                          ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content:
-                              Text(
+                              content: Text(
                                 e.toString(),
                               ),
                             ),
-
                           );
 
                         }

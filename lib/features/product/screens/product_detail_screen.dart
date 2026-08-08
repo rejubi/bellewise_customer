@@ -5,6 +5,7 @@ import '../../../core/errors/error_handler.dart';
 import '../../../core/widgets/error_view.dart';
 import '../../cart/controllers/cart_state.dart';
 import '../../cart/widgets/single_vendor_dialog.dart';
+import '../../favorites/controllers/favorites_controller.dart';
 import '../controllers/product_detail_controller.dart';
 import '../models/product_detail_model.dart';
 import '../widgets/add_to_cart_button.dart';
@@ -26,140 +27,187 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState
     extends State<ProductDetailScreen> {
-final ProductDetailController controller =
-ProductDetailController();
+  final ProductDetailController controller =
+  ProductDetailController();
 
-late Future<ProductDetailModel> future;
+  final FavoritesController favorites =
+      FavoritesController.instance;
 
-@override
-void initState() {
-super.initState();
-future = controller.loadProduct(widget.productId);
-}
+  late Future<ProductDetailModel> future;
 
-Future<void> _reload() async {
-setState(() {
-future = controller.loadProduct(widget.productId);
-});
+  @override
+  void initState() {
+    super.initState();
 
-await future;
-}
+    favorites.addListener(_favoriteChanged);
 
-Future<void> _addToCart(
-ProductDetailModel product,
-) async {
-final cart = CartState.instance;
+    future = controller.loadProduct(
+      widget.productId,
+    );
+  }
 
-if (!cart.isLoaded) {
-await cart.load();
-}
+  @override
+  void dispose() {
+    favorites.removeListener(_favoriteChanged);
+    super.dispose();
+  }
 
-if (!mounted) return;
+  void _favoriteChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
-if (cart.cart != null &&
-cart.cart!.vendor != null &&
-cart.cart!.vendor!.id != product.vendorId) {
-final replace = await SingleVendorDialog.show(
-context: context,
-currentVendor: cart.cart!.vendor!.businessName,
-newVendor: product.vendorName,
-);
+  Future<void> _reload() async {
+    setState(() {
+      future = controller.loadProduct(
+        widget.productId,
+      );
+    });
 
-if (!mounted) return;
+    await future;
+  }
 
-if (!replace) {
-return;
-}
+  Future<void> _addToCart(
+      ProductDetailModel product,
+      ) async {
+    final cart = CartState.instance;
 
-await cart.clearCart();
-}
+    if (!cart.isLoaded) {
+      await cart.load();
+    }
 
-await cart.addProduct(
-productId: product.id,
-);
+    if (!mounted) return;
 
-if (!mounted) return;
+    if (cart.cart != null &&
+        cart.cart!.vendor != null &&
+        cart.cart!.vendor!.id != product.vendorId) {
+      final replace = await SingleVendorDialog.show(
+        context: context,
+        currentVendor:
+        cart.cart!.vendor!.businessName,
+        newVendor: product.vendorName,
+      );
 
-ScaffoldMessenger.of(context).showSnackBar(
-SnackBar(
-content: Text(
-"${product.name} added to cart",
-),
-),
-);
+      if (!mounted) return;
 
-// Stay on this screen.
-// The AddToCartButton will automatically
-// change into the quantity selector.
-}
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: AppColors.background,
-    body: FutureBuilder<ProductDetailModel>(
-      future: future,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState ==
-            ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
+      if (!replace) {
+        return;
+      }
 
-        if (snapshot.hasError) {
-          return ErrorView(
-            message:
-            ErrorHandler.getMessage(snapshot.error),
-            onRetry: _reload,
-          );
-        }
+      await cart.clearCart();
+    }
 
-        if (!snapshot.hasData) {
-          return ErrorView(
-            message: "Product not found.",
-            onRetry: _reload,
-          );
-        }
+    await cart.addProduct(
+      productId: product.id,
+    );
 
-        final product = snapshot.data!;
+    if (!mounted) return;
 
-        final unitPrice =
-            product.discountPrice ?? product.price;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "${product.name} added to cart",
+        ),
+      ),
+    );
+  }
 
-        return Column(
-          children: [
-            Expanded(
-              child: CustomScrollView(
-                physics:
-                const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  ProductDetailHeader(
-                    image: product.image,
-                  ),
+  void _toggleFavorite() {
+    favorites.toggleFavorite(
+      widget.productId,
+    );
 
-                  SliverToBoxAdapter(
-                    child: ProductDetailInfo(
-                      product: product,
+    if (!mounted) return;
+
+    final isFavorite =
+    favorites.isFavorite(widget.productId);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          isFavorite
+              ? "Added to favorites"
+              : "Removed from favorites",
+        ),
+        duration:
+        const Duration(milliseconds: 900),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: FutureBuilder<ProductDetailModel>(
+        future: future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState ==
+              ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (snapshot.hasError) {
+            return ErrorView(
+              message:
+              ErrorHandler.getMessage(
+                snapshot.error,
+              ),
+              onRetry: _reload,
+            );
+          }
+
+          if (!snapshot.hasData) {
+            return ErrorView(
+              message: "Product not found.",
+              onRetry: _reload,
+            );
+          }
+
+          final product = snapshot.data!;
+
+          final unitPrice =
+              product.discountPrice ??
+                  product.price;
+
+          final isFavorite =
+          favorites.isFavorite(product.id);
+
+          return Column(
+            children: [
+              Expanded(
+                child: CustomScrollView(
+                  physics:
+                  const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    ProductDetailHeader(
+                      image: product.image,
+                      isFavorite: isFavorite,
+                      onFavoritePressed:
+                      _toggleFavorite,
                     ),
-                  ),
 
-                  // The old QuantitySelector has been removed.
-                  // The bottom button now becomes the quantity selector.
-                ],
+                    SliverToBoxAdapter(
+                      child: ProductDetailInfo(
+                        product: product,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            AddToCartButton(
-              productId: product.id,
-              unitPrice: unitPrice,
-              onAdd: () => _addToCart(
-                product,
+              AddToCartButton(
+                productId: product.id,
+                unitPrice: unitPrice,
+                onAdd: () => _addToCart(product),
               ),
-            ),
-          ],
-        );
-      },
-    ),
-  );
-}
+            ],
+          );
+        },
+      ),
+    );
+  }
 }
