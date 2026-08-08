@@ -74,7 +74,7 @@ class ProfileHeader extends StatelessWidget {
           // ====================================================
 
           Text(
-            'Customer ID: ${profile.id}',
+            'Customer ID: ${profile.publicId}',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,

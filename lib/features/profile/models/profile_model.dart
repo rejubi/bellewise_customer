@@ -2,6 +2,8 @@ class ProfileModel {
 
   final int id;
 
+  final String publicId;
+
   final String displayName;
 
   final String firstName;
@@ -31,6 +33,8 @@ class ProfileModel {
   ProfileModel({
 
     required this.id,
+
+    required this.publicId,
 
     required this.displayName,
 
@@ -68,6 +72,9 @@ class ProfileModel {
 
       id:
       json["id"] ?? 0,
+
+
+      publicId: json["public_id"]?.toString() ?? "",
 
 
       displayName:
