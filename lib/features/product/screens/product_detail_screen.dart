@@ -5,7 +5,7 @@ import '../../../core/errors/error_handler.dart';
 import '../../../core/widgets/error_view.dart';
 import '../../cart/controllers/cart_state.dart';
 import '../../cart/widgets/single_vendor_dialog.dart';
-import '../../favorites/controllers/favorites_controller.dart';
+import '../../favorites/controllers/favorites_store.dart';
 import '../controllers/product_detail_controller.dart';
 import '../models/product_detail_model.dart';
 import '../widgets/add_to_cart_button.dart';
@@ -30,16 +30,20 @@ class _ProductDetailScreenState
   final ProductDetailController controller =
   ProductDetailController();
 
-  final FavoritesController favorites =
-      FavoritesController.instance;
+  final FavoritesStore favorites =
+      FavoritesStore.instance;
 
-  late Future<ProductDetailModel> future;
+  late Future<ProductDetailModel?> future;
 
   @override
   void initState() {
     super.initState();
 
     favorites.addListener(_favoriteChanged);
+
+    // Make sure saved favorites are loaded
+    // from SharedPreferences.
+    favorites.initialize();
 
     future = controller.loadProduct(
       widget.productId,
@@ -49,14 +53,23 @@ class _ProductDetailScreenState
   @override
   void dispose() {
     favorites.removeListener(_favoriteChanged);
+
     super.dispose();
   }
+
+  // ==========================================================
+  // FAVORITE STATE
+  // ==========================================================
 
   void _favoriteChanged() {
     if (mounted) {
       setState(() {});
     }
   }
+
+  // ==========================================================
+  // RELOAD PRODUCT
+  // ==========================================================
 
   Future<void> _reload() async {
     setState(() {
@@ -67,6 +80,10 @@ class _ProductDetailScreenState
 
     await future;
   }
+
+  // ==========================================================
+  // ADD TO CART
+  // ==========================================================
 
   Future<void> _addToCart(
       ProductDetailModel product,
@@ -79,14 +96,20 @@ class _ProductDetailScreenState
 
     if (!mounted) return;
 
+    // --------------------------------------------------------
+    // CHECK FOR DIFFERENT VENDOR
+    // --------------------------------------------------------
+
     if (cart.cart != null &&
         cart.cart!.vendor != null &&
         cart.cart!.vendor!.id != product.vendorId) {
-      final replace = await SingleVendorDialog.show(
+      final replace =
+      await SingleVendorDialog.show(
         context: context,
         currentVendor:
         cart.cart!.vendor!.businessName,
-        newVendor: product.vendorName,
+        newVendor:
+        product.vendorName,
       );
 
       if (!mounted) return;
@@ -97,6 +120,10 @@ class _ProductDetailScreenState
 
       await cart.clearCart();
     }
+
+    // --------------------------------------------------------
+    // ADD PRODUCT
+    // --------------------------------------------------------
 
     await cart.addProduct(
       productId: product.id,
@@ -113,22 +140,26 @@ class _ProductDetailScreenState
     );
   }
 
-  void _toggleFavorite() {
-    favorites.toggleFavorite(
-      widget.productId,
-    );
+  // ==========================================================
+  // TOGGLE FAVORITE
+  // ==========================================================
+
+  Future<void> _toggleFavorite(
+      ProductDetailModel product,
+      ) async {
+    final wasFavorite =
+    favorites.isFavorite(product.id);
+
+    await favorites.toggleProduct(product);
 
     if (!mounted) return;
-
-    final isFavorite =
-    favorites.isFavorite(widget.productId);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          isFavorite
-              ? "Added to favorites"
-              : "Removed from favorites",
+          wasFavorite
+              ? "Removed from favorites"
+              : "Added to favorites",
         ),
         duration:
         const Duration(milliseconds: 900),
@@ -136,19 +167,33 @@ class _ProductDetailScreenState
     );
   }
 
+  // ==========================================================
+  // BUILD
+  // ==========================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: FutureBuilder<ProductDetailModel>(
+
+      body: FutureBuilder<ProductDetailModel?>(
         future: future,
+
         builder: (context, snapshot) {
+          // --------------------------------------------------
+          // LOADING
+          // --------------------------------------------------
+
           if (snapshot.connectionState ==
               ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
+
+          // --------------------------------------------------
+          // ERROR
+          // --------------------------------------------------
 
           if (snapshot.hasError) {
             return ErrorView(
@@ -160,12 +205,21 @@ class _ProductDetailScreenState
             );
           }
 
-          if (!snapshot.hasData) {
+          // --------------------------------------------------
+          // NO PRODUCT
+          // --------------------------------------------------
+
+          if (!snapshot.hasData ||
+              snapshot.data == null) {
             return ErrorView(
               message: "Product not found.",
               onRetry: _reload,
             );
           }
+
+          // --------------------------------------------------
+          // PRODUCT
+          // --------------------------------------------------
 
           final product = snapshot.data!;
 
@@ -174,21 +228,37 @@ class _ProductDetailScreenState
                   product.price;
 
           final isFavorite =
-          favorites.isFavorite(product.id);
+          favorites.isFavorite(
+            product.id,
+          );
 
           return Column(
             children: [
+              // ==============================================
+              // PRODUCT CONTENT
+              // ==============================================
+
               Expanded(
                 child: CustomScrollView(
                   physics:
                   const AlwaysScrollableScrollPhysics(),
+
                   slivers: [
+                    // ----------------------------------------
+                    // HEADER
+                    // ----------------------------------------
+
                     ProductDetailHeader(
                       image: product.image,
                       isFavorite: isFavorite,
-                      onFavoritePressed:
-                      _toggleFavorite,
+                      onFavoritePressed: () {
+                        _toggleFavorite(product);
+                      },
                     ),
+
+                    // ----------------------------------------
+                    // PRODUCT INFORMATION
+                    // ----------------------------------------
 
                     SliverToBoxAdapter(
                       child: ProductDetailInfo(
@@ -198,6 +268,10 @@ class _ProductDetailScreenState
                   ],
                 ),
               ),
+
+              // ==============================================
+              // ADD TO CART
+              // ==============================================
 
               AddToCartButton(
                 productId: product.id,

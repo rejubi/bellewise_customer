@@ -2,18 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/theme.dart';
-import '../../core/services/location_service.dart';
+import '../../core/storage/secure_storage.dart';
 import 'onboarding_page.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+  const OnboardingScreen({
+    super.key,
+  });
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  State<OnboardingScreen> createState() =>
+      _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
-  final PageController _controller = PageController();
+class _OnboardingScreenState
+    extends State<OnboardingScreen> {
+  final PageController _controller =
+  PageController();
+
+  final SecureStorage _storage =
+  SecureStorage();
 
   int currentPage = 0;
 
@@ -38,41 +46,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
   ];
 
-  Future<void> _finishOnboarding() async {
-    final allow = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Enable Location"),
-          content: const Text(
-            "BelleWise uses your location to:\n\n"
-                "• Show restaurants near you\n"
-                "• Detect your delivery address automatically\n"
-                "• Improve rider navigation and delivery accuracy\n\n"
-                "You can change this later in your phone settings.",
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text("Skip"),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text("Continue"),
-            ),
-          ],
-        );
-      },
-    );
+  // ============================================================
+  // FINISH ONBOARDING
+  // ============================================================
 
-    if (allow == true) {
-      await LocationService.initialize();
-    }
+  Future<void> _finishOnboarding() async {
+    // Remember that this device has completed onboarding.
+    await _storage.setOnboardingCompleted();
 
     if (!mounted) return;
 
-    context.go('/login');
+    // First-time user goes to CREATE ACCOUNT.
+    context.go('/register');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -82,6 +73,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            // ==================================================
+            // SKIP
+            // ==================================================
+
             Align(
               alignment: Alignment.topRight,
               child: TextButton(
@@ -89,6 +84,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: const Text("Skip"),
               ),
             ),
+
+            // ==================================================
+            // PAGES
+            // ==================================================
 
             Expanded(
               child: PageView.builder(
@@ -103,28 +102,43 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   final page = pages[index];
 
                   return Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding:
+                    const EdgeInsets.all(24),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment:
+                      MainAxisAlignment.center,
                       children: [
                         Image.asset(
                           page.image,
                           height: 280,
                         ),
-                        const SizedBox(height: 40),
+
+                        const SizedBox(
+                          height: 40,
+                        ),
+
                         Text(
                           page.title,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          textAlign:
+                          TextAlign.center,
+                          style:
+                          const TextStyle(
                             fontSize: 28,
-                            fontWeight: FontWeight.bold,
+                            fontWeight:
+                            FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 20),
+
+                        const SizedBox(
+                          height: 20,
+                        ),
+
                         Text(
                           page.description,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          textAlign:
+                          TextAlign.center,
+                          style:
+                          const TextStyle(
                             fontSize: 17,
                             color: Colors.grey,
                           ),
@@ -136,51 +150,89 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
 
+            // ==================================================
+            // PAGE INDICATORS
+            // ==================================================
+
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment:
+              MainAxisAlignment.center,
               children: List.generate(
                 pages.length,
-                    (index) => AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: currentPage == index ? 24 : 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: currentPage == index
-                        ? AppColors.primary
-                        : Colors.grey.shade400,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
+                    (index) =>
+                    AnimatedContainer(
+                      duration:
+                      const Duration(
+                        milliseconds: 300,
+                      ),
+                      margin:
+                      const EdgeInsets.symmetric(
+                        horizontal: 4,
+                      ),
+                      width:
+                      currentPage == index
+                          ? 24
+                          : 8,
+                      height: 8,
+                      decoration:
+                      BoxDecoration(
+                        color:
+                        currentPage == index
+                            ? AppColors.primary
+                            : Colors
+                            .grey
+                            .shade400,
+                        borderRadius:
+                        BorderRadius.circular(
+                          20,
+                        ),
+                      ),
+                    ),
               ),
             ),
 
             const SizedBox(height: 40),
 
+            // ==================================================
+            // NEXT / GET STARTED
+            // ==================================================
+
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding:
+              const EdgeInsets.symmetric(
+                horizontal: 24,
+              ),
               child: SizedBox(
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                  style:
+                  ElevatedButton.styleFrom(
+                    backgroundColor:
+                    AppColors.primary,
                   ),
                   onPressed: () {
-                    if (currentPage == pages.length - 1) {
+                    if (currentPage ==
+                        pages.length - 1) {
                       _finishOnboarding();
                     } else {
                       _controller.nextPage(
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.easeInOut,
+                        duration:
+                        const Duration(
+                          milliseconds: 400,
+                        ),
+                        curve:
+                        Curves.easeInOut,
                       );
                     }
                   },
                   child: Text(
-                    currentPage == pages.length - 1
+                    currentPage ==
+                        pages.length - 1
                         ? "Get Started"
                         : "Next",
-                    style: const TextStyle(
+                    style:
+                    const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                     ),

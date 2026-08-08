@@ -115,7 +115,7 @@ class OrderSuccessScreen extends StatelessWidget {
                     ),
 
                     onPressed: () {
-                      context.go("/orders");
+                      context.push("/orders");
                     },
 
                     label: const Text(

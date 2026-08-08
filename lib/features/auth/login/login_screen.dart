@@ -2,23 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
+import '../../../core/services/location_service.dart';
 import '../../../core/widgets/app_logo.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/primary_button.dart';
 import 'login_controller.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({
+    super.key,
+  });
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginScreen> createState() =>
+      _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final emailController =
+  TextEditingController();
 
-  final LoginController controller = LoginController();
+  final passwordController =
+  TextEditingController();
+
+  final LoginController controller =
+  LoginController();
 
   bool obscurePassword = true;
   bool loading = false;
@@ -30,6 +38,10 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  // ============================================================
+  // LOGIN
+  // ============================================================
+
   Future<void> login() async {
     FocusScope.of(context).unfocus();
 
@@ -37,9 +49,12 @@ class _LoginScreenState extends State<LoginScreen> {
         passwordController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Please enter your email and password."),
+          content: Text(
+            "Please enter your email and password.",
+          ),
         ),
       );
+
       return;
     }
 
@@ -58,34 +73,82 @@ class _LoginScreenState extends State<LoginScreen> {
       loading = false;
     });
 
-    if (success) {
-      context.go('/home');
-    } else {
+    if (!success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Invalid email or password."),
+          content: Text(
+            "Invalid email or password.",
+          ),
         ),
       );
+
+      return;
+    }
+
+    // ==========================================================
+    // LOGIN SUCCESSFUL
+    // ==========================================================
+
+    await _handleLocationPermission();
+
+    if (!mounted) return;
+
+    context.go('/home');
+  }
+
+  // ============================================================
+  // LOCATION
+  // ============================================================
+
+  Future<void> _handleLocationPermission() async {
+    try {
+      final hasPermission =
+      await LocationService.hasPermission();
+
+      if (hasPermission) {
+        // Permission already granted.
+        // Refresh the current location silently.
+        await LocationService.refresh();
+        return;
+      }
+
+      // This triggers the native Android/iOS permission dialog.
+      await LocationService.initialize();
+    } catch (e) {
+      debugPrint(
+        "Location initialization failed: $e",
+      );
+
+      // Location is helpful, but it must NOT prevent
+      // the user from entering the app.
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor:
+      AppColors.background,
+
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
+          padding:
+          const EdgeInsets.symmetric(
             horizontal: 24,
             vertical: 30,
           ),
+
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment:
+            CrossAxisAlignment.stretch,
+
             children: [
               const SizedBox(height: 20),
 
               const Center(
-                child: AppLogo(width: 140),
+                child: AppLogo(
+                  width: 140,
+                ),
               ),
 
               const SizedBox(height: 30),
@@ -95,7 +158,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 30,
-                  fontWeight: FontWeight.bold,
+                  fontWeight:
+                  FontWeight.bold,
                 ),
               ),
 
@@ -111,29 +175,47 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 40),
 
+              // ==================================================
+              // EMAIL
+              // ==================================================
+
               AppTextField(
-                controller: emailController,
+                controller:
+                emailController,
                 hint: "Email Address",
-                icon: Icons.email_outlined,
-                keyboardType: TextInputType.emailAddress,
+                icon:
+                Icons.email_outlined,
+                keyboardType:
+                TextInputType.emailAddress,
               ),
 
               const SizedBox(height: 20),
 
+              // ==================================================
+              // PASSWORD
+              // ==================================================
+
               AppTextField(
-                controller: passwordController,
+                controller:
+                passwordController,
                 hint: "Password",
-                icon: Icons.lock_outline,
-                obscureText: obscurePassword,
-                suffixIcon: IconButton(
+                icon:
+                Icons.lock_outline,
+                obscureText:
+                obscurePassword,
+
+                suffixIcon:
+                IconButton(
                   icon: Icon(
                     obscurePassword
                         ? Icons.visibility_off
                         : Icons.visibility,
                   ),
+
                   onPressed: () {
                     setState(() {
-                      obscurePassword = !obscurePassword;
+                      obscurePassword =
+                      !obscurePassword;
                     });
                   },
                 ),
@@ -141,35 +223,65 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 12),
 
+              // ==================================================
+              // FORGOT PASSWORD
+              // ==================================================
+
               Align(
-                alignment: Alignment.centerRight,
+                alignment:
+                Alignment.centerRight,
+
                 child: TextButton(
                   onPressed: () {
-                    context.push('/forgot-password');
+                    context.push(
+                      '/forgot-password',
+                    );
                   },
-                  child: const Text("Forgot Password?"),
+
+                  child: const Text(
+                    "Forgot Password?",
+                  ),
                 ),
               ),
 
               const SizedBox(height: 20),
 
+              // ==================================================
+              // LOGIN BUTTON
+              // ==================================================
+
               PrimaryButton(
                 text: "Login",
                 loading: loading,
-                onPressed: login,
+                onPressed:
+                loading ? null : login,
               ),
 
               const SizedBox(height: 30),
 
+              // ==================================================
+              // REGISTER
+              // ==================================================
+
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment:
+                MainAxisAlignment.center,
+
                 children: [
-                  const Text("Don't have an account?"),
+                  const Text(
+                    "Don't have an account?",
+                  ),
+
                   TextButton(
                     onPressed: () {
-                      context.go('/register');
+                      context.go(
+                        '/register',
+                      );
                     },
-                    child: const Text("Create Account"),
+
+                    child: const Text(
+                      "Create Account",
+                    ),
                   ),
                 ],
               ),
