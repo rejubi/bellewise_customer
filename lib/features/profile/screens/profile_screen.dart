@@ -23,7 +23,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState
     extends State<ProfileScreen> {
-
   final ProfileController controller =
   ProfileController();
 
@@ -32,7 +31,6 @@ class _ProfileScreenState
 
   late Future<ProfileModel> _future;
 
-
   @override
   void initState() {
     super.initState();
@@ -40,55 +38,44 @@ class _ProfileScreenState
     _future = controller.loadProfile();
   }
 
-
   Future<void> _refresh() async {
     setState(() {
       _future = controller.loadProfile();
     });
-  }
 
+    await _future;
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return AnimatedBuilder(
       animation: cartState,
-
       builder: (context, _) {
-
         return Scaffold(
-
           backgroundColor:
           AppColors.background,
 
-
           appBar: AppBar(
             elevation: 0,
-            backgroundColor:
-            Colors.white,
-
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
             centerTitle: true,
-
             title: const Text(
               "Profile",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
 
-
-
           bottomNavigationBar:
           HomeBottomNavigation(
-
             currentIndex: 4,
-
             onTap: (index) async {
-
-              switch(index) {
-
+              switch (index) {
                 case 0:
                   context.go("/home");
                   break;
-
 
                 case 1:
                   await context.push(
@@ -96,27 +83,20 @@ class _ProfileScreenState
                   );
                   break;
 
-
                 case 2:
                   await context.push(
                     "/cart",
                   );
                   break;
 
-
                 case 3:
-
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        "Favorites coming soon",
-                      ),
-                    ),
+                // ==========================================
+                // FAVORITES
+                // ==========================================
+                  await context.push(
+                    "/favorites",
                   );
-
                   break;
-
 
                 case 4:
                   break;
@@ -124,45 +104,40 @@ class _ProfileScreenState
             },
           ),
 
-
-
           body: FutureBuilder<ProfileModel>(
-
             future: _future,
-
-
             builder: (context, snapshot) {
+              // ============================================
+              // LOADING
+              // ============================================
 
-
-              if(snapshot.connectionState ==
+              if (snapshot.connectionState ==
                   ConnectionState.waiting) {
-
                 return const Center(
                   child:
                   CircularProgressIndicator(),
                 );
               }
 
+              // ============================================
+              // ERROR
+              // ============================================
 
-
-              if(snapshot.hasError) {
-
+              if (snapshot.hasError) {
                 return ErrorView(
-
                   message:
                   ErrorHandler.getMessage(
                     snapshot.error,
                   ),
-
-                  onRetry:
-                  _refresh,
+                  onRetry: _refresh,
                 );
               }
 
+              // ============================================
+              // NO PROFILE
+              // ============================================
 
-
-              if(!snapshot.hasData) {
-
+              if (!snapshot.hasData) {
                 return const Center(
                   child: Text(
                     "No profile found.",
@@ -170,195 +145,165 @@ class _ProfileScreenState
                 );
               }
 
-
-
               final profile =
               snapshot.data!;
 
-
+              // ============================================
+              // PROFILE CONTENT
+              // ============================================
 
               return RefreshIndicator(
-
-                onRefresh:
-                _refresh,
-
-
+                onRefresh: _refresh,
                 child: ListView(
-
+                  physics:
+                  const AlwaysScrollableScrollPhysics(),
                   padding:
                   const EdgeInsets.all(20),
-
-
                   children: [
-
-
                     const SizedBox(
                       height: 10,
                     ),
 
-
+                    // ======================================
+                    // PROFILE HEADER
+                    // ======================================
 
                     ProfileHeader(
                       profile: profile,
                     ),
 
-
-
                     const SizedBox(
                       height: 30,
                     ),
 
-                    ProfileMenuTile(
+                    // ======================================
+                    // SAVED ADDRESSES
+                    // ======================================
 
+                    ProfileMenuTile(
                       icon:
                       Icons.location_on_outlined,
-
                       title:
                       "Saved Addresses",
-
-
                       onTap: () async {
-
                         await context.push(
                           "/profile/addresses",
                         );
-
                       },
                     ),
 
-
+                    // ======================================
+                    // NOTIFICATIONS
+                    // ======================================
 
                     ProfileMenuTile(
-
                       icon:
                       Icons.notifications_outlined,
-
                       title:
                       "Notifications",
-
-
                       onTap: () async {
-
                         await context.push(
                           "/profile/notifications",
                         );
-
                       },
                     ),
 
-
+                    // ======================================
+                    // CHANGE PASSWORD
+                    // ======================================
 
                     ProfileMenuTile(
-
                       icon:
                       Icons.lock_outline,
-
                       title:
                       "Change Password",
-
-
                       onTap: () async {
-
                         await context.push(
                           "/profile/change-password",
                         );
-
                       },
                     ),
 
-
+                    // ======================================
+                    // HELP & SUPPORT
+                    // ======================================
 
                     ProfileMenuTile(
-
                       icon:
                       Icons.support_agent_outlined,
-
                       title:
                       "Help & Support",
-
-
                       onTap: () async {
-
                         await context.push(
                           "/profile/help",
                         );
-
                       },
                     ),
 
-
+                    // ======================================
+                    // ABOUT
+                    // ======================================
 
                     ProfileMenuTile(
-
                       icon:
                       Icons.info_outline,
-
                       title:
                       "About BelleWise",
-
-
                       onTap: () async {
-
                         await context.push(
                           "/profile/about",
                         );
-
                       },
                     ),
 
-
+                    // ======================================
+                    // LOGOUT
+                    // ======================================
 
                     ProfileMenuTile(
-
                       icon:
                       Icons.logout,
-
                       title:
                       "Logout",
-
                       color:
                       Colors.red,
-
-
                       onTap: () async {
-
                         try {
+                          // 1. Clear the customer's
+                          // server-side cart while
+                          // access token is still valid.
+                          await CartState.instance
+                              .clearCart();
 
-                          // 1. Clear the customer's server-side cart
-                          // while the access token is still available.
-                          await CartState.instance.clearCart();
+                          // 2. Remove JWT tokens.
+                          await controller
+                              .logout();
 
-                          // 2. Now remove the JWT tokens.
-                          await controller.logout();
-
-                          // 3. Go to login.
+                          // 3. Return to login.
                           if (!mounted) return;
 
-                          context.go("/login");
-
+                          context.go(
+                            "/login",
+                          );
                         } catch (e) {
-
                           if (!mounted) return;
 
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(
                             SnackBar(
                               content: Text(
                                 e.toString(),
                               ),
                             ),
                           );
-
                         }
-
                       },
                     ),
-
-
 
                     const SizedBox(
                       height: 20,
                     ),
-
                   ],
                 ),
               );

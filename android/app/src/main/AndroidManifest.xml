@@ -3,22 +3,34 @@
     <!-- Internet -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- Notifications -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
     <!-- Location -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
-    <!-- Android 10+ -->
+    <!-- Android 10+ Background Location -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+
 
     <application
         android:label="bellewise_mobile"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
+
         <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="YOUR_GOOGLE_MAPS_API_KEY"/>
+
+
+        <!-- Firebase Default Notification Channel -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="bellewise_order"/>
+
 
         <activity
             android:name=".MainActivity"
@@ -30,39 +42,60 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
 
+
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
 
             <intent-filter>
+
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+
+            </intent-filter>
+
+
+            <!-- Password Reset Deep Link -->
+
+            <intent-filter>
+
                 <action android:name="android.intent.action.VIEW"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
+
                 <category android:name="android.intent.category.BROWSABLE"/>
 
                 <data
                     android:scheme="bellewise"
                     android:host="reset-password"/>
+
             </intent-filter>
 
+
         </activity>
+
 
         <meta-data
             android:name="flutterEmbedding"
             android:value="2"/>
 
+
     </application>
 
+
     <queries>
+
         <intent>
+
             <action android:name="android.intent.action.PROCESS_TEXT"/>
+
             <data android:mimeType="text/plain"/>
+
         </intent>
+
     </queries>
+
 
 </manifest>

@@ -13,35 +13,90 @@ class CheckoutItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final total = item.price * item.quantity;
+    // ==========================================================
+    // CURRENT SELLING PRICE
+    // ==========================================================
+
+    final currentPrice =
+        item.currentPrice;
+
+    // ==========================================================
+    // ITEM TOTAL
+    // ==========================================================
+    //
+    // This is the UI calculation for displaying
+    // the current selling price × quantity.
+    //
+    // The actual order total remains controlled
+    // by the backend.
+    // ==========================================================
+
+    final total =
+        currentPrice * item.quantity;
 
     return Card(
       elevation: 1,
-      margin: const EdgeInsets.symmetric(
+
+      margin:
+      const EdgeInsets.symmetric(
         horizontal: 16,
         vertical: 6,
       ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
+
+      shape:
+      RoundedRectangleBorder(
+        borderRadius:
+        BorderRadius.circular(14),
       ),
+
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding:
+        const EdgeInsets.all(10),
+
         child: Row(
           children: [
+            // ==================================================
+            // PRODUCT IMAGE
+            // ==================================================
+
             ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: item.image != null
+              borderRadius:
+              BorderRadius.circular(10),
+
+              child: item.image != null &&
+                  item.image!.isNotEmpty
                   ? Image.network(
                 item.image!,
                 width: 70,
                 height: 70,
                 fit: BoxFit.cover,
+
+                errorBuilder:
+                    (
+                    context,
+                    error,
+                    stackTrace,
+                    ) {
+                  return Container(
+                    width: 70,
+                    height: 70,
+                    color:
+                    Colors.grey.shade200,
+                    child:
+                    const Icon(
+                      Icons.fastfood,
+                      color: Colors.grey,
+                    ),
+                  );
+                },
               )
                   : Container(
                 width: 70,
                 height: 70,
-                color: Colors.grey.shade200,
-                child: const Icon(
+                color:
+                Colors.grey.shade200,
+                child:
+                const Icon(
                   Icons.fastfood,
                   color: Colors.grey,
                 ),
@@ -50,14 +105,25 @@ class CheckoutItemCard extends StatelessWidget {
 
             const SizedBox(width: 14),
 
+            // ==================================================
+            // PRODUCT INFORMATION
+            // ==================================================
+
             Expanded(
               child: Column(
                 crossAxisAlignment:
                 CrossAxisAlignment.start,
+
                 children: [
                   Text(
                     item.name,
-                    style: const TextStyle(
+
+                    maxLines: 1,
+                    overflow:
+                    TextOverflow.ellipsis,
+
+                    style:
+                    const TextStyle(
                       fontSize: 16,
                       fontWeight:
                       FontWeight.bold,
@@ -66,22 +132,63 @@ class CheckoutItemCard extends StatelessWidget {
 
                   const SizedBox(height: 6),
 
-                  Text(
-                    "${item.quantity} × ₦${item.price.toStringAsFixed(0)}",
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 14,
-                    ),
+                  // ==================================================
+                  // QUANTITY × CURRENT PRICE
+                  // ==================================================
+
+                  Row(
+                    children: [
+                      Text(
+                        "${item.quantity} × ₦${currentPrice.toStringAsFixed(0)}",
+
+                        style: TextStyle(
+                          color:
+                          Colors.grey
+                              .shade600,
+                          fontSize: 14,
+                        ),
+                      ),
+
+                      if (item.hasDiscount) ...[
+                        const SizedBox(width: 6),
+
+                        Text(
+                          "₦${item.price.toStringAsFixed(0)}",
+
+                          style:
+                          const TextStyle(
+                            color:
+                            Colors.grey,
+                            fontSize: 12,
+                            decoration:
+                            TextDecoration
+                                .lineThrough,
+                            decorationColor:
+                            Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ],
               ),
             ),
 
+            const SizedBox(width: 8),
+
+            // ==================================================
+            // CURRENT ITEM TOTAL
+            // ==================================================
+
             Text(
               "₦${total.toStringAsFixed(0)}",
-              style: const TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.bold,
+
+              style:
+              const TextStyle(
+                color:
+                AppColors.primary,
+                fontWeight:
+                FontWeight.bold,
                 fontSize: 16,
               ),
             ),

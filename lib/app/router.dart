@@ -85,6 +85,12 @@ final router = GoRouter(
       },
     ),
 
+    GoRoute(
+      path: "/profile/change-password",
+      builder: (context, state) =>
+      const ChangePasswordScreen(),
+    ),
+
     // ==========================================
     // HOME
     // ==========================================
@@ -152,6 +158,10 @@ final router = GoRouter(
           address: data["address"] as String,
           phone: data["phone"] as String,
           note: data["note"] as String,
+          deliveryLatitude:
+          data["deliveryLatitude"] as double?,
+          deliveryLongitude:
+          data["deliveryLongitude"] as double?,
         );
       },
     ),

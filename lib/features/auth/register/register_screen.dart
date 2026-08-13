@@ -100,11 +100,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              const SizedBox(height: 20),
 
               const AppLogo(width: 120),
-
-              const SizedBox(height: 20),
 
               const Text(
                 "Create Account",

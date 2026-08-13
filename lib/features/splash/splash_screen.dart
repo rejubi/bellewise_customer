@@ -7,19 +7,24 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SplashScreen> createState() =>
+      _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  final SplashController controller = SplashController();
+class _SplashScreenState
+    extends State<SplashScreen> {
+  final SplashController controller =
+  SplashController();
 
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.initialize(context);
-    });
+    WidgetsBinding.instance.addPostFrameCallback(
+          (_) {
+        controller.initialize(context);
+      },
+    );
   }
 
   @override
@@ -28,14 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         width: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              AppColors.secondary,
-              AppColors.primary,
-            ],
-          ),
+          color: AppColors.primary,
         ),
         child: SafeArea(
           child: Column(
@@ -50,6 +48,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
 
+              const SizedBox(height: 15),
+
               const Text(
                 'YOUR FOOD PLUG',
                 style: TextStyle(
@@ -58,9 +58,6 @@ class _SplashScreenState extends State<SplashScreen> {
                   color: Colors.white,
                 ),
               ),
-
-              const SizedBox(height: 8),
-
 
               const Spacer(),
 

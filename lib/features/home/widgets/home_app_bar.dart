@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/services/location_service.dart';
+import '../../../app/theme.dart';
 
 class HomeAppBar extends StatelessWidget {
   final Map<String, dynamic> customer;
   final int notifications;
+  final String? locationAddress;
+  final bool loadingLocation;
 
   const HomeAppBar({
     super.key,
     required this.customer,
     required this.notifications,
+    this.locationAddress,
+    this.loadingLocation = false,
   });
 
   String greeting() {
@@ -29,11 +33,13 @@ class HomeAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gpsAddress =
-        LocationService.currentAddress?.trim() ?? "";
-
     final savedAddress =
-    (customer["full_address"] ?? "").toString().trim();
+    (customer["full_address"] ?? "")
+        .toString()
+        .trim();
+
+    final gpsAddress =
+        locationAddress?.trim() ?? "";
 
     final address = gpsAddress.isNotEmpty
         ? gpsAddress
@@ -41,54 +47,98 @@ class HomeAppBar extends StatelessWidget {
         ? savedAddress
         : "Add delivery address";
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(
+        20,
+        20,
+        20,
+        18,
+      ),
+      decoration: const BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
+        ),
+      ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:
+        CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+              CrossAxisAlignment.start,
               children: [
+                // GREETING
                 Text(
                   greeting(),
                   style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
+                    fontSize: 15,
+                    color: Colors.white70,
                   ),
                 ),
 
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
 
+                // CUSTOMER NAME
                 Text(
-                  customer["first_name"] ?? "",
+                  customer["first_name"]
+                      ?.toString() ??
+                      "",
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 25,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
 
+                // LOCATION
                 Row(
                   children: [
                     const Icon(
                       Icons.location_on,
-                      size: 16,
-                      color: Colors.orange,
+                      size: 17,
+                      color: Colors.white,
                     ),
-
-                    const SizedBox(width: 4),
-
+                    const SizedBox(width: 5),
                     Expanded(
-                      child: Text(
-                        address,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey,
-                        ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              address,
+                              maxLines: 1,
+                              overflow:
+                              TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color:
+                                Colors.white,
+                              ),
+                            ),
+                          ),
+
+                          if (loadingLocation)
+                            const Padding(
+                              padding:
+                              EdgeInsets.only(
+                                left: 6,
+                              ),
+                              child: SizedBox(
+                                width: 12,
+                                height: 12,
+                                child:
+                                CircularProgressIndicator(
+                                  strokeWidth: 1.5,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   ],
@@ -97,52 +147,67 @@ class HomeAppBar extends StatelessWidget {
             ),
           ),
 
-          // ====================================================
           // NOTIFICATIONS
-          // ====================================================
-
           Material(
-            color: Colors.transparent,
+            color: Colors.white.withOpacity(.15),
+            shape: const CircleBorder(),
             child: InkWell(
-              borderRadius: BorderRadius.circular(30),
+              customBorder:
+              const CircleBorder(),
               onTap: () {
-                context.push("/profile/notifications");
+                context.push(
+                  "/profile/notifications",
+                );
               },
               child: Padding(
-                padding: const EdgeInsets.all(6),
+                padding:
+                const EdgeInsets.all(10),
                 child: Stack(
-                  clipBehavior: Clip.none,
+                  clipBehavior:
+                  Clip.none,
                   children: [
                     const Icon(
-                      Icons.notifications_outlined,
-                      size: 30,
+                      Icons
+                          .notifications_outlined,
+                      size: 27,
+                      color: Colors.white,
                     ),
 
                     if (notifications > 0)
                       Positioned(
-                        right: -2,
-                        top: -2,
+                        right: -4,
+                        top: -4,
                         child: Container(
-                          constraints: const BoxConstraints(
-                            minWidth: 16,
-                            minHeight: 16,
+                          constraints:
+                          const BoxConstraints(
+                            minWidth: 17,
+                            minHeight: 17,
                           ),
-                          padding: const EdgeInsets.symmetric(
+                          padding:
+                          const EdgeInsets
+                              .symmetric(
                             horizontal: 3,
                           ),
-                          decoration: const BoxDecoration(
+                          decoration:
+                          const BoxDecoration(
                             color: Colors.red,
-                            shape: BoxShape.circle,
+                            shape:
+                            BoxShape.circle,
                           ),
-                          alignment: Alignment.center,
+                          alignment:
+                          Alignment.center,
                           child: Text(
                             notifications > 99
                                 ? "99+"
-                                : notifications.toString(),
-                            style: const TextStyle(
+                                : notifications
+                                .toString(),
+                            style:
+                            const TextStyle(
                               fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              fontWeight:
+                              FontWeight.bold,
+                              color:
+                              Colors.white,
                             ),
                           ),
                         ),

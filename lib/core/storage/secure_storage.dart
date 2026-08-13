@@ -21,7 +21,13 @@ class SecureStorage {
   }
 
   Future<String?> getAccessToken() async {
-    return _storage.read(
+    return await _storage.read(
+      key: _accessKey,
+    );
+  }
+
+  Future<void> deleteAccessToken() async {
+    await _storage.delete(
       key: _accessKey,
     );
   }
@@ -38,7 +44,13 @@ class SecureStorage {
   }
 
   Future<String?> getRefreshToken() async {
-    return _storage.read(
+    return await _storage.read(
+      key: _refreshKey,
+    );
+  }
+
+  Future<void> deleteRefreshToken() async {
+    await _storage.delete(
       key: _refreshKey,
     );
   }
@@ -51,8 +63,10 @@ class SecureStorage {
     required String access,
     required String refresh,
   }) async {
-    await saveAccessToken(access);
-    await saveRefreshToken(refresh);
+    await Future.wait([
+      saveAccessToken(access),
+      saveRefreshToken(refresh),
+    ]);
   }
 
   // ============================================================
@@ -75,20 +89,17 @@ class SecureStorage {
   }
 
   // ============================================================
-  // LOGOUT
+  // CLEAR AUTHENTICATION
   // ============================================================
 
-  /// Clears authentication only.
+  /// Clears authentication tokens only.
   ///
   /// The onboarding state is intentionally preserved.
   Future<void> clear() async {
-    await _storage.delete(
-      key: _accessKey,
-    );
-
-    await _storage.delete(
-      key: _refreshKey,
-    );
+    await Future.wait([
+      deleteAccessToken(),
+      deleteRefreshToken(),
+    ]);
   }
 
   // ============================================================
@@ -97,8 +108,7 @@ class SecureStorage {
 
   /// Makes the app behave like a brand-new installation.
   ///
-  /// Only use this intentionally, for example during
-  /// development/testing.
+  /// Only use this intentionally.
   Future<void> clearEverything() async {
     await _storage.deleteAll();
   }

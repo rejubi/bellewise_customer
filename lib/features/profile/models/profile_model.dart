@@ -1,8 +1,9 @@
 class ProfileModel {
-
   final int id;
 
   final String publicId;
+
+  final String username;
 
   final String displayName;
 
@@ -14,7 +15,6 @@ class ProfileModel {
 
   final String phoneNumber;
 
-
   final String address;
 
   final String city;
@@ -23,106 +23,65 @@ class ProfileModel {
 
   final String fullAddress;
 
-
   final double? latitude;
 
   final double? longitude;
 
-
-
   ProfileModel({
-
     required this.id,
-
     required this.publicId,
-
+    required this.username,
     required this.displayName,
-
     required this.firstName,
-
     required this.lastName,
-
     required this.email,
-
     required this.phoneNumber,
-
-
     required this.address,
-
     required this.city,
-
     required this.state,
-
     required this.fullAddress,
-
-
     required this.latitude,
-
     required this.longitude,
-
   });
-
-
 
   factory ProfileModel.fromJson(
       Map<String, dynamic> json,
       ) {
-
     return ProfileModel(
+      id: json["id"] ?? 0,
 
-      id:
-      json["id"] ?? 0,
+      publicId:
+      json["public_id"]?.toString() ?? "",
 
-
-      publicId: json["public_id"]?.toString() ?? "",
-
+      username:
+      json["username"]?.toString() ?? "",
 
       displayName:
-      json["display_name"] ?? "",
-
-
+      json["display_name"]?.toString() ?? "",
 
       firstName:
-      json["first_name"] ?? "",
-
-
+      json["first_name"]?.toString() ?? "",
 
       lastName:
-      json["last_name"] ?? "",
-
-
+      json["last_name"]?.toString() ?? "",
 
       email:
-      json["email"] ?? "",
-
-
+      json["email"]?.toString() ?? "",
 
       phoneNumber:
-      json["phone_number"] ?? "",
-
-
-
+      json["phone_number"]?.toString() ?? "",
 
       address:
-      json["address"] ?? "",
-
-
+      json["address"]?.toString() ?? "",
 
       city:
-      json["city"] ?? "",
-
-
+      json["city"]?.toString() ?? "",
 
       state:
-      json["state"] ?? "",
-
-
+      json["state"]?.toString() ?? "",
 
       fullAddress:
-      json["full_address"] ?? "",
-
-
-
+      json["full_address"]?.toString() ?? "",
 
       latitude:
       json["latitude"] != null
@@ -131,17 +90,12 @@ class ProfileModel {
       )
           : null,
 
-
-
       longitude:
       json["longitude"] != null
           ? double.tryParse(
         json["longitude"].toString(),
       )
           : null,
-
     );
-
   }
-
 }

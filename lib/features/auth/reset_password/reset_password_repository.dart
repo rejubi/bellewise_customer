@@ -15,33 +15,36 @@ class ResetPasswordRepository {
         data: {
           "uid": uid,
           "token": token,
-          "new_password": newPassword,
+
+          // IMPORTANT:
+          // Django expects "password",
+          // NOT "new_password".
+          "password": newPassword,
         },
       );
 
-      return response.data["message"] as String;
+      return response.data["message"]?.toString() ??
+          "Password reset successful.";
     } on DioException catch (e) {
-      if (e.response != null &&
-          e.response!.data is Map &&
-          e.response!.data["message"] != null) {
-        throw e.response!.data["message"];
-      }
+      final data = e.response?.data;
 
-      if (e.response != null &&
-          e.response!.data is Map &&
-          e.response!.data["detail"] != null) {
-        throw e.response!.data["detail"];
-      }
+      if (data is Map) {
+        if (data["message"] != null) {
+          throw data["message"].toString();
+        }
 
-      if (e.response != null &&
-          e.response!.data is Map &&
-          e.response!.data["error"] != null) {
-        throw e.response!.data["error"];
+        if (data["detail"] != null) {
+          throw data["detail"].toString();
+        }
+
+        if (data["error"] != null) {
+          throw data["error"].toString();
+        }
       }
 
       throw "Unable to reset password. Please try again.";
-    } catch (_) {
-      throw "Something went wrong. Please try again.";
+    } catch (e) {
+      throw e.toString();
     }
   }
 }

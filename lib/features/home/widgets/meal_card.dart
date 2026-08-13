@@ -76,19 +76,42 @@ class _MealCardState extends State<MealCard> {
   @override
   Widget build(BuildContext context) {
     final meal = widget.meal;
-    final quantity = cart.quantityForProduct(meal.id);
+
+    final quantity =
+    cart.quantityForProduct(meal.id);
+
+    // ==========================================================
+    // CURRENT SELLING PRICE
+    // ==========================================================
+    //
+    // If discountPrice exists, that is the price
+    // the customer should pay.
+    //
+    // Otherwise use the normal price.
+    //
+    final double currentPrice =
+        meal.discountPrice ?? meal.price;
+
+    final bool hasDiscount =
+        meal.discountPrice != null &&
+            meal.discountPrice! < meal.price;
 
     return SizedBox(
       width: 185,
       child: Card(
         elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius:
+          BorderRadius.circular(16),
         ),
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius:
+          BorderRadius.circular(16),
 
-          // Opens Product Detail when the card is tapped
+          // ====================================================
+          // PRODUCT DETAIL
+          // ====================================================
+
           onTap: () {
             context.push(
               "/product/${meal.id}",
@@ -96,12 +119,19 @@ class _MealCardState extends State<MealCard> {
           },
 
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+            CrossAxisAlignment.start,
             children: [
+
+              // ==================================================
+              // IMAGE
+              // ==================================================
+
               Expanded(
                 flex: 7,
                 child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
+                  borderRadius:
+                  const BorderRadius.vertical(
                     top: Radius.circular(16),
                   ),
                   child: meal.image == null
@@ -113,9 +143,15 @@ class _MealCardState extends State<MealCard> {
                   )
                       : CachedNetworkImage(
                     imageUrl: meal.image!,
-                    width: double.infinity,
+                    width:
+                    double.infinity,
                     fit: BoxFit.cover,
-                    errorWidget: (context, url, error) =>
+                    errorWidget:
+                        (
+                        context,
+                        url,
+                        error,
+                        ) =>
                     const Center(
                       child: Icon(
                         Icons.fastfood,
@@ -126,8 +162,13 @@ class _MealCardState extends State<MealCard> {
                 ),
               ),
 
+              // ==================================================
+              // NAME
+              // ==================================================
+
               Padding(
-                padding: const EdgeInsets.fromLTRB(
+                padding:
+                const EdgeInsets.fromLTRB(
                   10,
                   10,
                   10,
@@ -136,80 +177,156 @@ class _MealCardState extends State<MealCard> {
                 child: Text(
                   meal.name,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                  overflow:
+                  TextOverflow.ellipsis,
+                  style:
+                  const TextStyle(
+                    fontWeight:
+                    FontWeight.bold,
                     fontSize: 15,
                   ),
                 ),
               ),
 
+              // ==================================================
+              // PRICE + CART BUTTON
+              // ==================================================
+
               Padding(
-                padding: const EdgeInsets.symmetric(
+                padding:
+                const EdgeInsets.symmetric(
                   horizontal: 10,
                 ),
                 child: Row(
                   children: [
+
+                    // ==========================================
+                    // PRICE
+                    // ==========================================
+
                     Expanded(
-                      child: Text(
-                        "₦${meal.price.toStringAsFixed(0)}",
-                        style: const TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                      child: Column(
+                        crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                        mainAxisSize:
+                        MainAxisSize.min,
+                        children: [
+
+                          // CURRENT PRICE
+                          Text(
+                            "₦${currentPrice.toStringAsFixed(0)}",
+                            style:
+                            const TextStyle(
+                              color:
+                              AppColors.primary,
+                              fontWeight:
+                              FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+
+                          // ORIGINAL PRICE
+                          if (hasDiscount)
+                            Text(
+                              "₦${meal.price.toStringAsFixed(0)}",
+                              style:
+                              const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                                decoration:
+                                TextDecoration
+                                    .lineThrough,
+                                decorationColor:
+                                Colors.grey,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
+
+                    // ==========================================
+                    // ADD / QUANTITY
+                    // ==========================================
 
                     if (quantity == 0)
                       SizedBox(
                         height: 34,
-                        child: ElevatedButton(
+                        child:
+                        ElevatedButton(
                           onPressed: _add,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
+                          style:
+                          ElevatedButton
+                              .styleFrom(
+                            backgroundColor:
+                            AppColors.primary,
+                            foregroundColor:
+                            Colors.white,
+                            padding:
+                            const EdgeInsets
+                                .symmetric(
                               horizontal: 14,
                             ),
-                            shape: RoundedRectangleBorder(
+                            shape:
+                            RoundedRectangleBorder(
                               borderRadius:
-                              BorderRadius.circular(20),
+                              BorderRadius
+                                  .circular(
+                                20,
+                              ),
                             ),
                           ),
-                          child: const Text("Add"),
+                          child:
+                          const Text(
+                            "Add",
+                          ),
                         ),
                       )
                     else
                       Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
+                        decoration:
+                        BoxDecoration(
+                          color:
+                          AppColors.primary,
                           borderRadius:
-                          BorderRadius.circular(20),
+                          BorderRadius
+                              .circular(20),
                         ),
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisSize:
+                          MainAxisSize.min,
                           children: [
+
                             IconButton(
-                              onPressed: _decrease,
-                              icon: const Icon(
+                              onPressed:
+                              _decrease,
+                              icon:
+                              const Icon(
                                 Icons.remove,
-                                color: Colors.white,
+                                color:
+                                Colors.white,
                                 size: 18,
                               ),
                             ),
+
                             Text(
                               "$quantity",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                              style:
+                              const TextStyle(
+                                color:
+                                Colors.white,
+                                fontWeight:
+                                FontWeight.bold,
                               ),
                             ),
+
                             IconButton(
-                              onPressed: _increase,
-                              icon: const Icon(
+                              onPressed:
+                              _increase,
+                              icon:
+                              const Icon(
                                 Icons.add,
-                                color: Colors.white,
+                                color:
+                                Colors.white,
                                 size: 18,
                               ),
                             ),
@@ -220,7 +337,9 @@ class _MealCardState extends State<MealCard> {
                 ),
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(
+                height: 12,
+              ),
             ],
           ),
         ),

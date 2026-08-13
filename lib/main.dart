@@ -6,16 +6,21 @@ import 'app/app.dart';
 import 'core/api/api_client.dart';
 import 'firebase_options.dart';
 
+
 Future<void> main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
+
+  // Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Initialize Dio
+
+  // Dio
   ApiClient.initialize();
+
 
   runApp(
     const ProviderScope(

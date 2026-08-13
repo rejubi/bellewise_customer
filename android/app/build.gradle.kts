@@ -1,11 +1,8 @@
 plugins {
     id("com.android.application")
-
-    // Google Services
-    id("com.google.gms.google-services")
-
-    // Flutter
+    id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -49,13 +46,6 @@ flutter {
 }
 
 dependencies {
-
-    // Firebase Bill of Materials (BoM)
-    implementation(platform("com.google.firebase:firebase-bom:34.2.0"))
-
-    // Firebase Cloud Messaging
-    implementation("com.google.firebase:firebase-messaging")
-
     // Java 17 desugaring
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }

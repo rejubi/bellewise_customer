@@ -15,6 +15,8 @@ class PaymentScreen extends StatefulWidget {
   final String address;
   final String phone;
   final String note;
+  final double? deliveryLatitude;
+  final double? deliveryLongitude;
 
   const PaymentScreen({
     super.key,
@@ -23,6 +25,8 @@ class PaymentScreen extends StatefulWidget {
     required this.address,
     required this.phone,
     required this.note,
+    this.deliveryLatitude,
+    this.deliveryLongitude,
   });
 
   @override
@@ -230,6 +234,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
         customerPhone: widget.phone,
         customerNote: widget.note,
         paymentMethod: paymentMethod,
+        deliveryLatitude: widget.deliveryLatitude,
+        deliveryLongitude: widget.deliveryLongitude,
       );
 
       // -----------------------------------------

@@ -7,8 +7,10 @@ class ApiClient {
   static final Dio dio = Dio(
     BaseOptions(
       baseUrl: Endpoints.baseUrl,
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
+      connectTimeout:
+      const Duration(seconds: 30),
+      receiveTimeout:
+      const Duration(seconds: 30),
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
@@ -19,7 +21,9 @@ class ApiClient {
   static bool _initialized = false;
 
   static void initialize() {
-    if (_initialized) return;
+    if (_initialized) {
+      return;
+    }
 
     dio.interceptors.add(
       AuthInterceptor(),

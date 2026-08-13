@@ -70,6 +70,22 @@ class ProfileHeader extends StatelessWidget {
           const SizedBox(height: 6),
 
           // ====================================================
+          // USERNAME
+          // ====================================================
+
+          Text(
+            '@${profile.username}',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.primary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+
+          const SizedBox(height: 6),
+
+          // ====================================================
           // CUSTOMER ID
           // ====================================================
 
@@ -110,6 +126,22 @@ class ProfileHeader extends StatelessWidget {
 
                 const SizedBox(height: 16),
 
+                // ==================================================
+                // USERNAME
+                // ==================================================
+
+                _InfoRow(
+                  icon: Icons.alternate_email,
+                  label: 'Username',
+                  value: profile.username,
+                ),
+
+                const SizedBox(height: 14),
+
+                // ==================================================
+                // FIRST NAME
+                // ==================================================
+
                 _InfoRow(
                   icon: Icons.person_outline,
                   label: 'First Name',
@@ -117,6 +149,10 @@ class ProfileHeader extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 14),
+
+                // ==================================================
+                // LAST NAME
+                // ==================================================
 
                 _InfoRow(
                   icon: Icons.person_outline,
@@ -126,6 +162,10 @@ class ProfileHeader extends StatelessWidget {
 
                 const SizedBox(height: 14),
 
+                // ==================================================
+                // EMAIL
+                // ==================================================
+
                 _InfoRow(
                   icon: Icons.email_outlined,
                   label: 'Email',
@@ -133,6 +173,10 @@ class ProfileHeader extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 14),
+
+                // ==================================================
+                // PHONE NUMBER
+                // ==================================================
 
                 _InfoRow(
                   icon: Icons.phone_outlined,
@@ -197,9 +241,13 @@ class _InfoRow extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight:
-                  hasValue ? FontWeight.w600 : FontWeight.normal,
+                  hasValue
+                      ? FontWeight.w600
+                      : FontWeight.normal,
                   color:
-                  hasValue ? Colors.black87 : Colors.grey.shade600,
+                  hasValue
+                      ? Colors.black87
+                      : Colors.grey.shade600,
                 ),
               ),
             ],

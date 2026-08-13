@@ -15,6 +15,9 @@ class Endpoints {
   static const String profile =
       "/customers/profile/";
 
+  static const String changePassword =
+      "/customers/profile/change-password/";
+
   static const String forgotPassword =
       "/customers/forgot-password/";
 
@@ -25,11 +28,34 @@ class Endpoints {
       "/token/refresh/";
 
   // ==========================================================
-  // Notifications
+  // FCM / Notifications
   // ==========================================================
 
-  static const String registerFcmToken =
-      "/notifications/fcm-token/";
+  static const String registerFcmDevice =
+      "/fcm/register/";
+
+  static const String deleteFcmDevice =
+      "/fcm/delete/";
+
+
+  // ==========================================================
+// Notifications
+// ==========================================================
+
+  static const String notifications =
+      "/notifications/";
+
+  static String markNotificationRead(int id) =>
+      "/notifications/$id/read/";
+
+  static const String markAllNotificationsRead =
+      "/notifications/read-all/";
+
+  static String deleteNotification(int id) =>
+      "/notifications/$id/delete/";
+
+  static const String notificationUnreadCount =
+      "/notifications/unread-count/";
 
   // ==========================================================
   // Home

@@ -18,7 +18,8 @@ class LoginScreen extends StatefulWidget {
       _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState
+    extends State<LoginScreen> {
   final emailController =
   TextEditingController();
 
@@ -45,6 +46,10 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> login() async {
     FocusScope.of(context).unfocus();
 
+    // ----------------------------------------------------------
+    // VALIDATION
+    // ----------------------------------------------------------
+
     if (emailController.text.trim().isEmpty ||
         passwordController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -58,9 +63,17 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    // ----------------------------------------------------------
+    // SHOW LOADING
+    // ----------------------------------------------------------
+
     setState(() {
       loading = true;
     });
+
+    // ----------------------------------------------------------
+    // LOGIN
+    // ----------------------------------------------------------
 
     final success = await controller.login(
       email: emailController.text.trim(),
@@ -69,9 +82,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!mounted) return;
 
+    // ----------------------------------------------------------
+    // STOP LOGIN LOADING
+    // ----------------------------------------------------------
+
     setState(() {
       loading = false;
     });
+
+    // ----------------------------------------------------------
+    // LOGIN FAILED
+    // ----------------------------------------------------------
 
     if (!success) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -88,41 +109,50 @@ class _LoginScreenState extends State<LoginScreen> {
     // ==========================================================
     // LOGIN SUCCESSFUL
     // ==========================================================
-
-    await _handleLocationPermission();
-
-    if (!mounted) return;
+    //
+    // IMPORTANT:
+    //
+    // Do NOT wait for location permission here.
+    //
+    // The customer must enter Home immediately after
+    // authentication.
+    //
 
     context.go('/home');
-  }
 
-  // ============================================================
-  // LOCATION
-  // ============================================================
+    // ==========================================================
+    // LOCATION IN BACKGROUND
+    // ==========================================================
+    //
+    // This runs after navigation.
+    //
+    // It will:
+    // 1. Check/request location permission.
+    // 2. Get the customer's GPS position.
+    // 3. Convert it to an address.
+    //
+    // None of this blocks login/navigation.
+    //
 
-  Future<void> _handleLocationPermission() async {
-    try {
-      final hasPermission =
-      await LocationService.hasPermission();
+    Future.microtask(() async {
+      try {
+        await LocationService.initialize();
 
-      if (hasPermission) {
-        // Permission already granted.
-        // Refresh the current location silently.
-        await LocationService.refresh();
-        return;
+        debugPrint(
+          "LOGIN LOCATION: "
+              "${LocationService.currentAddress}",
+        );
+      } catch (e) {
+        debugPrint(
+          "BACKGROUND LOCATION ERROR: $e",
+        );
       }
-
-      // This triggers the native Android/iOS permission dialog.
-      await LocationService.initialize();
-    } catch (e) {
-      debugPrint(
-        "Location initialization failed: $e",
-      );
-
-      // Location is helpful, but it must NOT prevent
-      // the user from entering the app.
-    }
+    });
   }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -145,6 +175,10 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const SizedBox(height: 20),
 
+              // ==================================================
+              // LOGO
+              // ==================================================
+
               const Center(
                 child: AppLogo(
                   width: 140,
@@ -152,6 +186,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               const SizedBox(height: 30),
+
+              // ==================================================
+              // TITLE
+              // ==================================================
 
               const Text(
                 "Welcome Back",

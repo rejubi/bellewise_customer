@@ -1,9 +1,22 @@
+# ==========================================================
+# BelleWise Flutter .gitignore
+# ==========================================================
+
+# ==========================================================
 # Miscellaneous
+# ==========================================================
+
 *.class
 *.log
 *.pyc
 *.swp
+*.tmp
+*.temp
+*.bak
+
 .DS_Store
+Thumbs.db
+
 .atom/
 .build/
 .buildlog/
@@ -12,41 +25,155 @@
 .swiftpm/
 migrate_working_dir/
 
-# IntelliJ related
+# ==========================================================
+# IntelliJ / Android Studio
+# ==========================================================
+
 *.iml
 *.ipr
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
+# Android Studio generated project files
+android/.gradle/
+android/local.properties
+android/*.iml
+android/app/*.iml
+
+# ==========================================================
+# VS Code
+# ==========================================================
+
+# Keep this commented if you want to commit VS Code settings.
 #.vscode/
 
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# ==========================================================
+# Flutter / Dart / Pub
+# ==========================================================
+
 .dart_tool/
+.flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
-/build/
-/coverage/
+build/
+coverage/
 
-# Symbolication related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+
+# Flutter generated files
+**/GeneratedPluginRegistrant.*
+**/generated_plugins.cmake
+**/flutter/ephemeral/
+
+# ==========================================================
+# Flutter Symbolication / Obfuscation
+# ==========================================================
+
 app.*.symbols
-
-# Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# ==========================================================
+# Android Build Artifacts
+# ==========================================================
 
+android/app/debug/
+android/app/profile/
+android/app/release/
+
+*.apk
+*.aab
+
+# ==========================================================
+# iOS Generated / Build Files
+# ==========================================================
+
+ios/Flutter/ephemeral/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+
+# ==========================================================
+# macOS Generated Files
+# ==========================================================
+
+macos/Flutter/ephemeral/
+
+# ==========================================================
+# Linux Generated Files
+# ==========================================================
+
+linux/flutter/ephemeral/
+
+# ==========================================================
+# Windows Generated Files
+# ==========================================================
+
+windows/flutter/ephemeral/
+
+# ==========================================================
 # Firebase
-firebase/
-firebase/*.json
+# ==========================================================
+
+# Firebase CLI local/generated files
+.firebase/
+firebase-debug.log
+
+# ----------------------------------------------------------
+# IMPORTANT:
+#
+# Do NOT ignore these normal Flutter/Firebase client files:
+#
+# android/app/google-services.json
+# firebase.json
+# lib/firebase_options.dart
+#
+# They are client/project configuration and are normally
+# safe to keep in the repository.
+# ----------------------------------------------------------
+
+# ==========================================================
+# Firebase Admin / Service Account Credentials
+# ==========================================================
+
 firebase-key.json
+firebase/*.json
+
 *adminsdk*.json
 serviceAccountKey.json
+
+**/*serviceAccount*.json
+**/*service-account*.json
+**/*firebase-admin*.json
+
+# ==========================================================
+# Environment / Secrets
+# ==========================================================
+
+.env
+.env.*
+!.env.example
+
+secrets.json
+secrets.yaml
+secrets.yml
+
+# ==========================================================
+# Google Cloud Credentials
+# ==========================================================
+
+application_default_credentials.json
+gcloud-credentials.json
+
+*.pem
+*.p12
+*.pfx
+*.key
+
+# ==========================================================
+# IDE / OS
+# ==========================================================
+
+.DS_Store
+Thumbs.db
+desktop.ini

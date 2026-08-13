@@ -38,6 +38,8 @@ class _CheckoutScreenState
   bool _loadingPricing = true;
 
   String? _selectedAddress;
+  double? _deliveryLatitude;
+  double? _deliveryLongitude;
 
   final TextEditingController
   _phoneController =
@@ -53,6 +55,15 @@ class _CheckoutScreenState
 
     _selectedAddress =
         LocationService.currentAddress;
+
+    final position =
+        LocationService.currentPosition;
+
+    _deliveryLatitude =
+        position?.latitude;
+
+    _deliveryLongitude =
+        position?.longitude;
 
     _loadPricing();
   }
@@ -94,6 +105,9 @@ class _CheckoutScreenState
       setState(() {
         _selectedAddress =
             result.fullAddress;
+
+        _deliveryLatitude = null;
+        _deliveryLongitude = null;
       });
     }
   }
@@ -287,6 +301,10 @@ class _CheckoutScreenState
         _phoneController.text.trim(),
         "note":
         _notesController.text.trim(),
+        "deliveryLatitude":
+        _deliveryLatitude,
+        "deliveryLongitude":
+        _deliveryLongitude,
       },
     );
   }
