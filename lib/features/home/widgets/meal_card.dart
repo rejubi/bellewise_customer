@@ -301,7 +301,7 @@ class _MealCardState extends State<MealCard> {
                           ),
                         )
                             : const Text(
-                          "Add",
+                          "Add to Cart",
                         ),
                       ),
                     )

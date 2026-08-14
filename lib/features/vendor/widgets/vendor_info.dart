@@ -46,10 +46,6 @@ class VendorInfo extends StatelessWidget {
 
               const Spacer(),
 
-              Text(
-                "${vendor.deliveryTime} mins",
-              ),
-
               const SizedBox(width: 20),
 
               Text(
