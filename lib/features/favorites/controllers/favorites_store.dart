@@ -210,6 +210,8 @@ class FavoritesStore extends ChangeNotifier {
           image: product.image,
           preparationTime: product.preparationTime,
           available: product.available,
+          isPurchaseable: true,
+          unavailableReason: null,
           featured: false,
         ),
       );
@@ -278,6 +280,8 @@ class FavoritesStore extends ChangeNotifier {
       'image': meal.image,
       'preparationTime': meal.preparationTime,
       'available': meal.available,
+      'isPurchaseable': meal.isPurchaseable,
+      'unavailableReason': meal.unavailableReason,
       'featured': meal.featured,
     };
   }
@@ -341,6 +345,12 @@ class FavoritesStore extends ChangeNotifier {
 
       available:
       json['available'] == true,
+
+      isPurchaseable:
+      json['isPurchaseable'] ?? true,
+
+      unavailableReason:
+      json['unavailableReason']?.toString(),
 
       featured:
       json['featured'] == true,

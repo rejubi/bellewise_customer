@@ -3,14 +3,19 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
 import '../../cart/controllers/cart_state.dart';
+import '../../cart/widgets/single_vendor_dialog.dart';
 import '../models/vendor_product_model.dart';
 
 class VendorProductCard extends StatefulWidget {
   final VendorProductModel product;
+  final int vendorId;
+  final String vendorName;
 
   const VendorProductCard({
     super.key,
     required this.product,
+    required this.vendorId,
+    required this.vendorName,
   });
 
   @override
@@ -58,6 +63,46 @@ class _VendorProductCardState
     });
 
     try {
+      // --------------------------------------------------------
+      // LOAD CART
+      // --------------------------------------------------------
+
+      if (!cart.isLoaded) {
+        await cart.load();
+      }
+
+      if (!mounted) return;
+
+      // --------------------------------------------------------
+      // CHECK FOR DIFFERENT VENDOR
+      // --------------------------------------------------------
+
+      if (cart.cart != null &&
+          cart.cart!.vendor != null &&
+          cart.cart!.vendor!.id != widget.vendorId) {
+        final replace = await SingleVendorDialog.show(
+          context: context,
+          currentVendor:
+          cart.cart!.vendor!.businessName,
+          newVendor:
+          widget.vendorName,
+        );
+
+        if (!mounted) return;
+
+        // Customer chose not to replace
+        if (!replace) {
+          return;
+        }
+
+        // Customer agreed to replace vendor
+        await cart.clearCart();
+      }
+
+      // --------------------------------------------------------
+      // ADD PRODUCT
+      // --------------------------------------------------------
+
       await cart.addProduct(
         productId: widget.product.id,
       );

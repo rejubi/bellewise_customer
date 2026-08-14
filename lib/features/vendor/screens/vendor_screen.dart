@@ -85,6 +85,7 @@ class _VendorScreenState extends State<VendorScreen> {
                     SliverToBoxAdapter(
                       child: VendorProductGrid(
                         vendorId: vendor.id,
+                        vendorName: vendor.businessName,
                       ),
                     ),
 

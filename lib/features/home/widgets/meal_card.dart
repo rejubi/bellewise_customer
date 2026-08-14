@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
 import '../../cart/controllers/cart_state.dart';
+import '../../cart/widgets/single_vendor_dialog.dart';
 import '../models/meal_model.dart';
 
 class MealCard extends StatefulWidget {
@@ -47,11 +48,72 @@ class _MealCardState extends State<MealCard> {
   }
 
   // ==========================================================
+  // UNAVAILABLE TEXT
+  // ==========================================================
+
+  String get unavailableText {
+    switch (widget.meal.unavailableReason) {
+      case "shop_closed":
+        return "Shop Closed";
+
+      case "holiday":
+        return "On Holiday";
+
+      case "vendor_unavailable":
+        return "Unavailable";
+
+      default:
+        return "Unavailable";
+    }
+  }
+
+  // ==========================================================
   // ADD TO CART
   // ==========================================================
 
   Future<void> _add() async {
     if (_adding) return;
+
+    // Product/vendor cannot currently accept orders.
+    if (!widget.meal.isPurchaseable ||
+        !widget.meal.available) {
+      return;
+    }
+
+    // Make sure cart is loaded before checking vendor.
+    if (!cart.isLoaded) {
+      await cart.load();
+    }
+
+    if (!mounted) return;
+
+    // ========================================================
+    // CHECK FOR DIFFERENT VENDOR
+    // ========================================================
+
+    if (cart.cart != null &&
+        cart.cart!.vendor != null &&
+        cart.cart!.vendor!.id != widget.meal.vendorId) {
+      final replace =
+      await SingleVendorDialog.show(
+        context: context,
+        currentVendor:
+        cart.cart!.vendor!.businessName,
+        newVendor: widget.meal.vendor,
+      );
+
+      if (!mounted) return;
+
+      if (!replace) {
+        return;
+      }
+
+      await cart.clearCart();
+    }
+
+    // ========================================================
+    // ADD PRODUCT
+    // ========================================================
 
     setState(() {
       _adding = true;
@@ -70,7 +132,8 @@ class _MealCardState extends State<MealCard> {
             "${widget.meal.name} added to cart",
           ),
           backgroundColor: Colors.green,
-          duration: const Duration(milliseconds: 900),
+          duration:
+          const Duration(milliseconds: 900),
         ),
       );
     } finally {
@@ -103,7 +166,7 @@ class _MealCardState extends State<MealCard> {
   }
 
   // ==========================================================
-  // OPEN PRODUCT DETAIL
+  // OPEN PRODUCT
   // ==========================================================
 
   void _openProduct() {
@@ -130,22 +193,25 @@ class _MealCardState extends State<MealCard> {
         meal.discountPrice != null &&
             meal.discountPrice! < meal.price;
 
+    final bool canPurchase =
+        meal.isPurchaseable &&
+            meal.available;
+
     return SizedBox(
       width: 185,
       child: Card(
         elevation: 2,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius:
+          BorderRadius.circular(16),
         ),
         child: Column(
           crossAxisAlignment:
           CrossAxisAlignment.start,
           children: [
-
             // ==================================================
             // IMAGE
-            // Tap image → Product Detail
             // ==================================================
 
             Expanded(
@@ -157,7 +223,8 @@ class _MealCardState extends State<MealCard> {
                   const BorderRadius.vertical(
                     top: Radius.circular(16),
                   ),
-                  child: meal.image == null
+                  child: meal.image == null ||
+                      meal.image!.isEmpty
                       ? const Center(
                     child: Icon(
                       Icons.fastfood,
@@ -166,20 +233,22 @@ class _MealCardState extends State<MealCard> {
                   )
                       : CachedNetworkImage(
                     imageUrl: meal.image!,
-                    width: double.infinity,
+                    width:
+                    double.infinity,
                     fit: BoxFit.cover,
                     errorWidget:
                         (
                         context,
                         url,
                         error,
-                        ) =>
-                    const Center(
-                      child: Icon(
-                        Icons.fastfood,
-                        size: 50,
-                      ),
-                    ),
+                        ) {
+                      return const Center(
+                        child: Icon(
+                          Icons.fastfood,
+                          size: 50,
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -187,13 +256,13 @@ class _MealCardState extends State<MealCard> {
 
             // ==================================================
             // NAME
-            // Tap name → Product Detail
             // ==================================================
 
             InkWell(
               onTap: _openProduct,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(
+                padding:
+                const EdgeInsets.fromLTRB(
                   10,
                   10,
                   10,
@@ -202,9 +271,11 @@ class _MealCardState extends State<MealCard> {
                 child: Text(
                   meal.name,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  overflow:
+                  TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight:
+                    FontWeight.bold,
                     fontSize: 15,
                   ),
                 ),
@@ -212,16 +283,16 @@ class _MealCardState extends State<MealCard> {
             ),
 
             // ==================================================
-            // PRICE + CART
+            // PRICE + CART ACTION
             // ==================================================
 
             Padding(
-              padding: const EdgeInsets.symmetric(
+              padding:
+              const EdgeInsets.symmetric(
                 horizontal: 10,
               ),
               child: Row(
                 children: [
-
                   // ==========================================
                   // PRICE
                   // ==========================================
@@ -230,14 +301,17 @@ class _MealCardState extends State<MealCard> {
                     child: Column(
                       crossAxisAlignment:
                       CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisSize:
+                      MainAxisSize.min,
                       children: [
-
                         Text(
                           "₦${currentPrice.toStringAsFixed(0)}",
-                          style: const TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
+                          style:
+                          const TextStyle(
+                            color:
+                            AppColors.primary,
+                            fontWeight:
+                            FontWeight.bold,
                             fontSize: 16,
                           ),
                         ),
@@ -245,7 +319,8 @@ class _MealCardState extends State<MealCard> {
                         if (hasDiscount)
                           Text(
                             "₦${meal.price.toStringAsFixed(0)}",
-                            style: const TextStyle(
+                            style:
+                            const TextStyle(
                               color: Colors.grey,
                               fontSize: 12,
                               decoration:
@@ -260,32 +335,75 @@ class _MealCardState extends State<MealCard> {
                   ),
 
                   // ==========================================
-                  // ADD / QUANTITY
+                  // UNAVAILABLE
                   // ==========================================
 
-                  if (quantity == 0)
+                  if (!canPurchase)
+                    Container(
+                      height: 34,
+                      padding:
+                      const EdgeInsets
+                          .symmetric(
+                        horizontal: 10,
+                      ),
+                      decoration:
+                      BoxDecoration(
+                        color:
+                        Colors.grey.shade300,
+                        borderRadius:
+                        BorderRadius.circular(
+                          20,
+                        ),
+                      ),
+                      alignment:
+                      Alignment.center,
+                      child: Text(
+                        unavailableText,
+                        style:
+                        TextStyle(
+                          color:
+                          Colors.grey.shade700,
+                          fontWeight:
+                          FontWeight.bold,
+                          fontSize: 11,
+                        ),
+                      ),
+                    )
+
+                  // ==========================================
+                  // ADD TO CART
+                  // ==========================================
+
+                  else if (quantity == 0)
                     SizedBox(
                       height: 34,
                       child: ElevatedButton(
                         onPressed:
-                        _adding ? null : _add,
+                        _adding
+                            ? null
+                            : _add,
                         style:
-                        ElevatedButton.styleFrom(
+                        ElevatedButton
+                            .styleFrom(
                           backgroundColor:
                           AppColors.primary,
                           foregroundColor:
                           Colors.white,
                           disabledBackgroundColor:
                           AppColors.primary
-                              .withOpacity(.6),
+                              .withOpacity(
+                            .6,
+                          ),
                           padding:
-                          const EdgeInsets.symmetric(
+                          const EdgeInsets
+                              .symmetric(
                             horizontal: 14,
                           ),
                           shape:
                           RoundedRectangleBorder(
                             borderRadius:
-                            BorderRadius.circular(
+                            BorderRadius
+                                .circular(
                               20,
                             ),
                           ),
@@ -297,7 +415,8 @@ class _MealCardState extends State<MealCard> {
                           child:
                           CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.white,
+                            color:
+                            Colors.white,
                           ),
                         )
                             : const Text(
@@ -305,41 +424,55 @@ class _MealCardState extends State<MealCard> {
                         ),
                       ),
                     )
+
+                  // ==========================================
+                  // QUANTITY
+                  // ==========================================
+
                   else
                     Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
+                      decoration:
+                      BoxDecoration(
+                        color:
+                        AppColors.primary,
                         borderRadius:
-                        BorderRadius.circular(20),
+                        BorderRadius.circular(
+                          20,
+                        ),
                       ),
                       child: Row(
                         mainAxisSize:
                         MainAxisSize.min,
                         children: [
-
                           IconButton(
-                            onPressed: _decrease,
-                            icon: const Icon(
+                            onPressed:
+                            _decrease,
+                            icon:
+                            const Icon(
                               Icons.remove,
-                              color: Colors.white,
+                              color:
+                              Colors.white,
                               size: 18,
                             ),
                           ),
-
                           Text(
                             "$quantity",
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style:
+                            const TextStyle(
+                              color:
+                              Colors.white,
                               fontWeight:
                               FontWeight.bold,
                             ),
                           ),
-
                           IconButton(
-                            onPressed: _increase,
-                            icon: const Icon(
+                            onPressed:
+                            _increase,
+                            icon:
+                            const Icon(
                               Icons.add,
-                              color: Colors.white,
+                              color:
+                              Colors.white,
                               size: 18,
                             ),
                           ),

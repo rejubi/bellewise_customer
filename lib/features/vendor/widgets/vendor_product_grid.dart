@@ -6,10 +6,12 @@ import 'vendor_product_card.dart';
 
 class VendorProductGrid extends StatefulWidget {
   final int vendorId;
+  final String vendorName;
 
   const VendorProductGrid({
     super.key,
     required this.vendorId,
+    required this.vendorName,
   });
 
   @override
@@ -90,6 +92,8 @@ class _VendorProductGridState
             itemBuilder: (context, index) {
               return VendorProductCard(
                 product: products[index],
+                vendorId: widget.vendorId,
+                vendorName: widget.vendorName,
               );
             },
           ),

@@ -5,6 +5,10 @@ class MealModel {
   final String vendor;
   final int vendorId;
 
+  // Vendor availability
+  final bool isPurchaseable;
+  final String? unavailableReason;
+
   // Category
   final String category;
   final int categoryId;
@@ -23,6 +27,8 @@ class MealModel {
     required this.id,
     required this.vendor,
     required this.vendorId,
+    required this.isPurchaseable,
+    this.unavailableReason,
     required this.category,
     required this.categoryId,
     required this.name,
@@ -50,26 +56,38 @@ class MealModel {
       vendorId: json["vendor_id"] ?? 0,
 
       // ======================================================
+      // VENDOR AVAILABILITY
+      // ======================================================
+
+      isPurchaseable:
+      json["is_purchaseable"] ?? false,
+
+      unavailableReason:
+      json["unavailable_reason"]?.toString(),
+
+      // ======================================================
       // CATEGORY
       // ======================================================
 
-      category: json["category"]?.toString() ?? "",
+      category:
+      json["category"]?.toString() ?? "",
 
-      categoryId: json["category_id"] ?? 0,
+      categoryId:
+      json["category_id"] ?? 0,
 
       // ======================================================
       // PRODUCT
       // ======================================================
 
-      name: json["name"]?.toString() ?? "",
+      name:
+      json["name"]?.toString() ?? "",
 
       description:
       json["description"]?.toString() ?? "",
 
       price: double.tryParse(
         json["price"]?.toString() ?? "",
-      ) ??
-          0,
+      ) ?? 0,
 
       discountPrice:
       json["discount_price"] == null
@@ -78,7 +96,8 @@ class MealModel {
         json["discount_price"].toString(),
       ),
 
-      image: json["image"]?.toString(),
+      image:
+      json["image"]?.toString(),
 
       preparationTime:
       json["preparation_time"] ?? 0,
