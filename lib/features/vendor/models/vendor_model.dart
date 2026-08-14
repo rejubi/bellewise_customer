@@ -11,6 +11,9 @@ class VendorModel {
   final int deliveryTime;
   final String badge;
 
+  final String businessStatus;
+  final bool isOpen;
+
   VendorModel({
     required this.id,
     required this.businessName,
@@ -23,9 +26,16 @@ class VendorModel {
     required this.deliveryFee,
     required this.deliveryTime,
     required this.badge,
+    required this.businessStatus,
+    required this.isOpen,
   });
 
-  factory VendorModel.fromJson(Map<String, dynamic> json) {
+  factory VendorModel.fromJson(
+      Map<String, dynamic> json,
+      ) {
+    final status =
+        json["business_status"] ?? "OPEN";
+
     return VendorModel(
       id: json["id"],
       businessName: json["business_name"] ?? "",
@@ -33,13 +43,26 @@ class VendorModel {
       logo: json["logo"] ?? "",
       banner: json["banner"] ?? "",
       address: json["address"] ?? "",
-      rating: double.tryParse(json["rating"].toString()) ?? 0,
-      totalReviews: json["total_reviews"] ?? 0,
+      rating:
+      double.tryParse(
+        json["rating"].toString(),
+      ) ??
+          0,
+      totalReviews:
+      json["total_reviews"] ?? 0,
       deliveryFee:
-      double.tryParse(json["delivery_fee"].toString()) ?? 0,
+      double.tryParse(
+        json["delivery_fee"].toString(),
+      ) ??
+          0,
       deliveryTime:
       json["estimated_delivery_time"] ?? 0,
       badge: json["badge"] ?? "",
+
+      businessStatus: status,
+
+      isOpen:
+      status == "OPEN",
     );
   }
 }

@@ -21,6 +21,13 @@ class CartState extends ChangeNotifier {
 
   int? get vendorId => _cart?.vendor?.id;
 
+  bool get vendorIsOpen =>
+      _cart?.vendor?.isOpen ?? false;
+
+  bool get vendorIsClosed =>
+      _cart?.vendor != null &&
+          !_cart!.vendor!.isOpen;
+
   String get vendorName =>
       _cart?.vendor?.businessName ?? "";
 

@@ -82,12 +82,52 @@ class _ProductDetailScreenState
   }
 
   // ==========================================================
+  // UNAVAILABLE MESSAGE
+  // ==========================================================
+
+  String _unavailableMessage(
+      ProductDetailModel product,
+      ) {
+    switch (product.unavailableReason) {
+      case "shop_closed":
+        return "This shop is currently closed.";
+
+      case "holiday":
+        return "This shop is currently on holiday.";
+
+      case "vendor_unavailable":
+        return "This shop is currently unavailable.";
+
+      default:
+        return "This product cannot currently be purchased.";
+    }
+  }
+
+  // ==========================================================
   // ADD TO CART
   // ==========================================================
 
   Future<void> _addToCart(
       ProductDetailModel product,
       ) async {
+    // --------------------------------------------------------
+    // PRODUCT / VENDOR PURCHASE AVAILABILITY
+    // --------------------------------------------------------
+
+    if (!product.isPurchaseable) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _unavailableMessage(product),
+          ),
+        ),
+      );
+
+      return;
+    }
+
     final cart = CartState.instance;
 
     if (!cart.isLoaded) {
@@ -103,8 +143,7 @@ class _ProductDetailScreenState
     if (cart.cart != null &&
         cart.cart!.vendor != null &&
         cart.cart!.vendor!.id != product.vendorId) {
-      final replace =
-      await SingleVendorDialog.show(
+      final replace = await SingleVendorDialog.show(
         context: context,
         currentVendor:
         cart.cart!.vendor!.businessName,
@@ -197,8 +236,7 @@ class _ProductDetailScreenState
 
           if (snapshot.hasError) {
             return ErrorView(
-              message:
-              ErrorHandler.getMessage(
+              message: ErrorHandler.getMessage(
                 snapshot.error,
               ),
               onRetry: _reload,

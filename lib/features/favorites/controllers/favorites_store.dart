@@ -16,7 +16,8 @@ class FavoritesStore extends ChangeNotifier {
   // STORAGE
   // ============================================================
 
-  static const String _storageKey = 'bellewise_favorites';
+  static const String _storageKey =
+      'bellewise_favorites';
 
   // ============================================================
   // FAVORITES
@@ -67,8 +68,7 @@ class FavoritesStore extends ChangeNotifier {
         return;
       }
 
-      final decoded =
-      jsonDecode(storedData);
+      final decoded = jsonDecode(storedData);
 
       if (decoded is! List) {
         _initialized = true;
@@ -83,8 +83,7 @@ class FavoritesStore extends ChangeNotifier {
         }
 
         try {
-          final meal =
-          _mealFromJson(
+          final meal = _mealFromJson(
             Map<String, dynamic>.from(item),
           );
 
@@ -185,16 +184,31 @@ class FavoritesStore extends ChangeNotifier {
       _favorites.add(
         MealModel(
           id: product.id,
+
+          // ====================================================
+          // VENDOR
+          // ====================================================
+
           vendor: product.vendorName,
+          vendorId: product.vendorId,
+
+          // ====================================================
+          // CATEGORY
+          // ====================================================
+
           category: product.category,
           categoryId: 0,
+
+          // ====================================================
+          // PRODUCT
+          // ====================================================
+
           name: product.name,
           description: product.description,
           price: product.price,
           discountPrice: product.discountPrice,
           image: product.image,
-          preparationTime:
-          product.preparationTime,
+          preparationTime: product.preparationTime,
           available: product.available,
           featured: false,
         ),
@@ -210,7 +224,9 @@ class FavoritesStore extends ChangeNotifier {
   // REMOVE
   // ============================================================
 
-  Future<void> remove(int productId) async {
+  Future<void> remove(
+      int productId,
+      ) async {
     await initialize();
 
     _favorites.removeWhere(
@@ -245,16 +261,22 @@ class FavoritesStore extends ChangeNotifier {
       ) {
     return {
       'id': meal.id,
+
+      // Vendor
       'vendor': meal.vendor,
+      'vendorId': meal.vendorId,
+
+      // Category
       'category': meal.category,
       'categoryId': meal.categoryId,
+
+      // Product
       'name': meal.name,
       'description': meal.description,
       'price': meal.price,
       'discountPrice': meal.discountPrice,
       'image': meal.image,
-      'preparationTime':
-      meal.preparationTime,
+      'preparationTime': meal.preparationTime,
       'available': meal.available,
       'featured': meal.featured,
     };
@@ -270,14 +292,29 @@ class FavoritesStore extends ChangeNotifier {
     return MealModel(
       id: (json['id'] as num).toInt(),
 
+      // ========================================================
+      // VENDOR
+      // ========================================================
+
       vendor:
       json['vendor']?.toString() ?? '',
+
+      vendorId:
+      (json['vendorId'] as num?)?.toInt() ?? 0,
+
+      // ========================================================
+      // CATEGORY
+      // ========================================================
 
       category:
       json['category']?.toString() ?? '',
 
       categoryId:
       (json['categoryId'] as num?)?.toInt() ?? 0,
+
+      // ========================================================
+      // PRODUCT
+      // ========================================================
 
       name:
       json['name']?.toString() ?? '',
@@ -286,7 +323,7 @@ class FavoritesStore extends ChangeNotifier {
       json['description']?.toString() ?? '',
 
       price:
-      (json['price'] as num).toDouble(),
+      (json['price'] as num?)?.toDouble() ?? 0,
 
       discountPrice:
       json['discountPrice'] == null

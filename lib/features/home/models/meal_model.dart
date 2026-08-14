@@ -1,8 +1,15 @@
 class MealModel {
   final int id;
+
+  // Vendor
   final String vendor;
+  final int vendorId;
+
+  // Category
   final String category;
   final int categoryId;
+
+  // Product
   final String name;
   final String description;
   final double price;
@@ -15,6 +22,7 @@ class MealModel {
   MealModel({
     required this.id,
     required this.vendor,
+    required this.vendorId,
     required this.category,
     required this.categoryId,
     required this.name,
@@ -27,24 +35,59 @@ class MealModel {
     required this.featured,
   });
 
-  factory MealModel.fromJson(Map<String, dynamic> json) {
+  factory MealModel.fromJson(
+      Map<String, dynamic> json,
+      ) {
     return MealModel(
-      id: json["id"],
-      vendor: json["vendor"] ?? "",
-      category: json["category"] ?? "",
+      id: json["id"] ?? 0,
+
+      // ======================================================
+      // VENDOR
+      // ======================================================
+
+      vendor: json["vendor"]?.toString() ?? "",
+
+      vendorId: json["vendor_id"] ?? 0,
+
+      // ======================================================
+      // CATEGORY
+      // ======================================================
+
+      category: json["category"]?.toString() ?? "",
+
       categoryId: json["category_id"] ?? 0,
-      name: json["name"] ?? "",
-      description: json["description"] ?? "",
-      price: double.tryParse(json["price"].toString()) ?? 0,
-      discountPrice: json["discount_price"] == null
+
+      // ======================================================
+      // PRODUCT
+      // ======================================================
+
+      name: json["name"]?.toString() ?? "",
+
+      description:
+      json["description"]?.toString() ?? "",
+
+      price: double.tryParse(
+        json["price"]?.toString() ?? "",
+      ) ??
+          0,
+
+      discountPrice:
+      json["discount_price"] == null
           ? null
           : double.tryParse(
         json["discount_price"].toString(),
       ),
-      image: json["image"],
-      preparationTime: json["preparation_time"] ?? 0,
-      available: json["is_available"] ?? false,
-      featured: json["is_featured"] ?? false,
+
+      image: json["image"]?.toString(),
+
+      preparationTime:
+      json["preparation_time"] ?? 0,
+
+      available:
+      json["is_available"] ?? false,
+
+      featured:
+      json["is_featured"] ?? false,
     );
   }
 }

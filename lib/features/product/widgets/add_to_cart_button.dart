@@ -52,6 +52,10 @@ class AddToCartButton extends StatelessWidget {
             ),
             child: Row(
               children: [
+                // ==================================================
+                // TOTAL PRICE
+                // ==================================================
+
                 Expanded(
                   child: Column(
                     crossAxisAlignment:
@@ -65,7 +69,9 @@ class AddToCartButton extends StatelessWidget {
                           fontSize: 13,
                         ),
                       ),
+
                       const SizedBox(height: 4),
+
                       Text(
                         "₦${totalPrice.toStringAsFixed(0)}",
                         style: const TextStyle(
@@ -80,13 +86,19 @@ class AddToCartButton extends StatelessWidget {
 
                 const SizedBox(width: 16),
 
+                // ==================================================
+                // CART ACTION
+                // ==================================================
+
                 Expanded(
                   flex: 2,
                   child: SizedBox(
                     height: 58,
                     child: quantity == 0
                         ? ElevatedButton.icon(
-                      onPressed: onAdd,
+                      onPressed: () async {
+                        await onAdd();
+                      },
                       icon: const Icon(
                         Icons.shopping_cart_checkout,
                         color: Colors.white,
@@ -103,12 +115,9 @@ class AddToCartButton extends StatelessWidget {
                         backgroundColor:
                         AppColors.primary,
                         elevation: 0,
-                        shape:
-                        RoundedRectangleBorder(
+                        shape: RoundedRectangleBorder(
                           borderRadius:
-                          BorderRadius.circular(
-                            18,
-                          ),
+                          BorderRadius.circular(18),
                         ),
                       ),
                     )
@@ -120,6 +129,10 @@ class AddToCartButton extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
+                          // ----------------------------------
+                          // DECREASE
+                          // ----------------------------------
+
                           Expanded(
                             child: IconButton(
                               onPressed: () {
@@ -134,6 +147,10 @@ class AddToCartButton extends StatelessWidget {
                             ),
                           ),
 
+                          // ----------------------------------
+                          // QUANTITY
+                          // ----------------------------------
+
                           Text(
                             "$quantity",
                             style: const TextStyle(
@@ -143,6 +160,10 @@ class AddToCartButton extends StatelessWidget {
                               fontSize: 20,
                             ),
                           ),
+
+                          // ----------------------------------
+                          // INCREASE
+                          // ----------------------------------
 
                           Expanded(
                             child: IconButton(

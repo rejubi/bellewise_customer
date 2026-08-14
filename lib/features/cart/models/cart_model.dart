@@ -28,7 +28,7 @@ class CartModel {
       Map<String, dynamic> json,
       ) {
     return CartModel(
-      id: json["id"],
+      id: json["id"] ?? 0,
 
       vendor: json["vendor"] == null
           ? null
@@ -36,41 +36,70 @@ class CartModel {
         json["vendor"],
       ),
 
-      items: (json["items"] as List)
+      items: (json["items"] as List? ?? [])
           .map(
             (e) => CartItemModel.fromJson(e),
       )
           .toList(),
 
-      subtotal: double.parse(
-        json["subtotal"].toString(),
-      ),
+      subtotal: double.tryParse(
+        json["subtotal"]?.toString() ?? "0",
+      ) ??
+          0,
 
-      deliveryFee: double.parse(
-        json["delivery_fee"].toString(),
-      ),
+      deliveryFee: double.tryParse(
+        json["delivery_fee"]?.toString() ?? "0",
+      ) ??
+          0,
 
-      serviceFee: double.parse(
-        json["service_fee"].toString(),
-      ),
+      serviceFee: double.tryParse(
+        json["service_fee"]?.toString() ?? "0",
+      ) ??
+          0,
 
-      total: double.parse(
-        json["total"].toString(),
-      ),
+      total: double.tryParse(
+        json["total"]?.toString() ?? "0",
+      ) ??
+          0,
     );
   }
+
+  // ==========================================================
+  // CART STATUS
+  // ==========================================================
 
   bool get isEmpty => items.isEmpty;
 
   bool get isNotEmpty => items.isNotEmpty;
 
-  /// Vendor currently owning this cart
+  // ==========================================================
+  // VENDOR
+  // ==========================================================
+
+  /// Vendor currently owning this cart.
   int? get vendorId => vendor?.id;
 
   String get vendorName =>
       vendor?.businessName ?? "";
 
-  bool get hasVendor => vendor != null;
+  bool get hasVendor =>
+      vendor != null;
+
+  /// True when the vendor is currently open
+  /// and able to receive orders.
+  bool get vendorIsOpen {
+    return vendor?.isOpen ?? false;
+  }
+
+  /// True when the vendor is currently closed
+  /// or there is no vendor attached to the cart.
+  bool get vendorIsClosed {
+    return !vendorIsOpen;
+  }
+
+  // ==========================================================
+  // CART ITEMS
+  // ==========================================================
 
   CartItemModel? itemForProduct(
       int productId,
@@ -88,8 +117,7 @@ class CartModel {
   bool containsProduct(
       int productId,
       ) {
-    return itemForProduct(productId) !=
-        null;
+    return itemForProduct(productId) != null;
   }
 
   int quantityForProduct(
@@ -110,6 +138,10 @@ class CartModel {
 
     return count;
   }
+
+  // ==========================================================
+  // VENDOR CHECK
+  // ==========================================================
 
   /// Returns true if this cart belongs to another vendor.
   bool belongsToAnotherVendor(

@@ -52,7 +52,8 @@ class ProductDetailInfo extends StatelessWidget {
 
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
                     children: [
                       Text(
                         product.vendorName,
@@ -75,7 +76,8 @@ class ProductDetailInfo extends StatelessWidget {
                           const SizedBox(width: 4),
 
                           Text(
-                            product.vendorRating.toStringAsFixed(1),
+                            product.vendorRating
+                                .toStringAsFixed(1),
                           ),
 
                           const SizedBox(width: 10),
@@ -131,7 +133,8 @@ class ProductDetailInfo extends StatelessWidget {
                   Text(
                     "₦${product.price.toStringAsFixed(0)}",
                     style: const TextStyle(
-                      decoration: TextDecoration.lineThrough,
+                      decoration:
+                      TextDecoration.lineThrough,
                       color: Colors.grey,
                       fontSize: 20,
                     ),
@@ -169,12 +172,14 @@ class ProductDetailInfo extends StatelessWidget {
                 ),
 
                 _chip(
-                  product.available
+                  product.isPurchaseable
                       ? Icons.check_circle
                       : Icons.cancel,
-                  product.available
+                  product.isPurchaseable
                       ? "Available"
-                      : "Unavailable",
+                      : _unavailableText(
+                    product.unavailableReason,
+                  ),
                 ),
               ],
             ),
@@ -208,6 +213,26 @@ class ProductDetailInfo extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // ============================================================
+  // UNAVAILABLE STATUS
+  // ============================================================
+
+  String _unavailableText(String? reason) {
+    switch (reason) {
+      case "shop_closed":
+        return "Shop Closed";
+
+      case "holiday":
+        return "On Holiday";
+
+      case "vendor_unavailable":
+        return "Unavailable";
+
+      default:
+        return "Unavailable";
+    }
   }
 
   // ============================================================

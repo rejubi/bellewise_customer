@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../app/theme.dart';
 
 class CheckoutButton extends StatelessWidget {
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   const CheckoutButton({
     super.key,
@@ -12,10 +12,17 @@ class CheckoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool enabled = onPressed != null;
+
     return SafeArea(
       top: false,
       child: Container(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        padding: const EdgeInsets.fromLTRB(
+          16,
+          12,
+          16,
+          16,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
@@ -32,21 +39,39 @@ class CheckoutButton extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
+              backgroundColor: enabled
+                  ? AppColors.primary
+                  : Colors.grey.shade300,
+              foregroundColor: enabled
+                  ? Colors.white
+                  : Colors.grey.shade600,
+              disabledBackgroundColor:
+              Colors.grey.shade300,
+              disabledForegroundColor:
+              Colors.grey.shade600,
               elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius:
+                BorderRadius.circular(14),
               ),
             ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Row(
+              mainAxisAlignment:
+              MainAxisAlignment.center,
               children: [
-                Icon(Icons.shopping_bag_outlined),
-                SizedBox(width: 10),
+                Icon(
+                  enabled
+                      ? Icons.shopping_bag_outlined
+                      : Icons.store_mall_directory_outlined,
+                ),
+
+                const SizedBox(width: 10),
+
                 Text(
-                  "Proceed to Checkout",
-                  style: TextStyle(
+                  enabled
+                      ? "Proceed to Checkout"
+                      : "Vendor Currently Closed",
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),

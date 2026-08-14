@@ -22,6 +22,10 @@ class ProductDetailModel {
   final String address;
   final bool isOpen;
 
+  // Purchase availability
+  final bool isPurchaseable;
+  final String? unavailableReason;
+
   ProductDetailModel({
     required this.id,
     required this.name,
@@ -43,6 +47,8 @@ class ProductDetailModel {
     required this.badge,
     required this.address,
     required this.isOpen,
+    required this.isPurchaseable,
+    required this.unavailableReason,
   });
 
   factory ProductDetailModel.fromJson(
@@ -75,9 +81,11 @@ class ProductDetailModel {
       available:
       json["is_available"] ?? true,
 
-      category: json["category"].toString(),
+      category:
+      json["category"]?.toString() ?? "",
 
-      vendorId: json["vendor_id"] ?? 0,
+      vendorId:
+      json["vendor_id"] ?? 0,
 
       vendorName:
       vendor["business_name"] ?? "",
@@ -110,6 +118,16 @@ class ProductDetailModel {
 
       isOpen:
       vendor["is_open"] ?? false,
+
+      // ======================================================
+      // PURCHASE AVAILABILITY
+      // ======================================================
+
+      isPurchaseable:
+      json["is_purchaseable"] ?? false,
+
+      unavailableReason:
+      json["unavailable_reason"],
     );
   }
 }

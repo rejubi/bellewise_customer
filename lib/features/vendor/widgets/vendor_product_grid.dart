@@ -22,8 +22,7 @@ class _VendorProductGridState
   final VendorProductController controller =
   VendorProductController();
 
-  late Future<List<VendorProductModel>>
-  productsFuture;
+  late Future<List<VendorProductModel>> productsFuture;
 
   @override
   void initState() {
@@ -81,7 +80,10 @@ class _VendorProductGridState
             gridDelegate:
             const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: .70,
+
+              // Taller cards to prevent content overflow.
+              childAspectRatio: .60,
+
               crossAxisSpacing: 14,
               mainAxisSpacing: 14,
             ),
