@@ -22,13 +22,12 @@ import '../features/profile/screens/edit_profile_screen.dart';
 import '../features/profile/screens/addresses_screen.dart';
 import '../features/profile/screens/notifications_screen.dart';
 import '../features/profile/screens/change_password_screen.dart';
-import '../features/profile/screens/help_support_screen.dart';
-import '../features/profile/screens/about_screen.dart';
 import '../features/profile/screens/add_address_screen.dart';
 import '../features/auth/forgot_password/forgot_password_screen.dart';
 import '../features/auth/reset_password/reset_password_screen.dart';
 import '../features/cart/models/cart_pricing_model.dart';
 import '../features/favorites/screens/favorites_screen.dart';
+import '../features/app_management/presentation/screens/app_management_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -310,26 +309,6 @@ final router = GoRouter(
     ),
 
     // ==========================================
-    // HELP & SUPPORT
-    // ==========================================
-
-    GoRoute(
-      path: '/profile/help',
-      builder: (context, state) =>
-      const HelpSupportScreen(),
-    ),
-
-    // ==========================================
-    // ABOUT
-    // ==========================================
-
-    GoRoute(
-      path: '/profile/about',
-      builder: (context, state) =>
-      const AboutScreen(),
-    ),
-
-    // ==========================================
     // PRODUCT DETAILS
     // ==========================================
 
@@ -344,6 +323,14 @@ final router = GoRouter(
           productId: productId,
         );
       },
+    ),
+    GoRoute(
+      path: "/app-management",
+      builder: (
+          context,
+          state,
+          ) =>
+      const AppManagementScreen(),
     ),
   ],
 

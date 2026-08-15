@@ -192,15 +192,13 @@ class _ProfileScreenState
                       },
                     ),
 
-                    // ======================================
-                    // NOTIFICATIONS
-                    // ======================================
+// ======================================
+// NOTIFICATIONS
+// ======================================
 
                     ProfileMenuTile(
-                      icon:
-                      Icons.notifications_outlined,
-                      title:
-                      "Notifications",
+                      icon: Icons.notifications_outlined,
+                      title: "Notifications",
                       onTap: () async {
                         await context.push(
                           "/profile/notifications",
@@ -208,15 +206,13 @@ class _ProfileScreenState
                       },
                     ),
 
-                    // ======================================
-                    // CHANGE PASSWORD
-                    // ======================================
+// ======================================
+// CHANGE PASSWORD
+// ======================================
 
                     ProfileMenuTile(
-                      icon:
-                      Icons.lock_outline,
-                      title:
-                      "Change Password",
+                      icon: Icons.lock_outline,
+                      title: "Change Password",
                       onTap: () async {
                         await context.push(
                           "/profile/change-password",
@@ -224,34 +220,16 @@ class _ProfileScreenState
                       },
                     ),
 
-                    // ======================================
-                    // HELP & SUPPORT
-                    // ======================================
+// ======================================
+// APP INFORMATION
+// ======================================
 
                     ProfileMenuTile(
-                      icon:
-                      Icons.support_agent_outlined,
-                      title:
-                      "Help & Support",
+                      icon: Icons.info_outline,
+                      title: "App Information",
                       onTap: () async {
                         await context.push(
-                          "/profile/help",
-                        );
-                      },
-                    ),
-
-                    // ======================================
-                    // ABOUT
-                    // ======================================
-
-                    ProfileMenuTile(
-                      icon:
-                      Icons.info_outline,
-                      title:
-                      "About BelleWise",
-                      onTap: () async {
-                        await context.push(
-                          "/profile/about",
+                          "/app-management",
                         );
                       },
                     ),
@@ -299,10 +277,6 @@ class _ProfileScreenState
                           );
                         }
                       },
-                    ),
-
-                    const SizedBox(
-                      height: 20,
                     ),
                   ],
                 ),

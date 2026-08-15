@@ -124,4 +124,25 @@ class Endpoints {
       int orderId,
       ) =>
       "/orders/$orderId/cancel/";
+
+  // ==========================================================
+  // App Management
+  // ==========================================================
+
+  static const String appContent =
+      "/app-management/content/";
+
+  static String appContentDetail(
+      String slug,
+      ) =>
+      "/app-management/content/$slug/";
+
+  static const String appFaqs =
+      "/app-management/faqs/";
+
+  static const String appAnnouncements =
+      "/app-management/announcements/";
+
+  static const String appSettings =
+      "/app-management/settings/";
 }
